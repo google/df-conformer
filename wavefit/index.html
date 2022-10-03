@@ -1,0 +1,350 @@
+
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>WaveFit: An Iterative and Non-autoregressive Neural Vocoder based on Fixed-Point Iteration</title>
+      <link rel="stylesheet" type="text/css" href="stylesheet.css"/>
+      <script>
+         function play(path) {{
+           var player = document.getElementById('player');
+           player.src = path;
+           player.play();
+         }}
+      </script>
+      <style>
+         .audio-cell {
+         /* Center audio widgets in the table cell. */
+         text-align: center;
+         padding-bottom: 1px;
+         padding-top: 1px;
+         }
+         .audio-cell-padded {
+         text-align: center;
+         padding-bottom: 10px;
+         padding-top: 10px;
+         }
+         .audio-header {
+         /* Don't wrap header text. */
+         white-space: nowrap;
+         /* Some breaking space between headers for readability. */
+         padding-right: 5px;
+         padding-left: 5px;
+         }
+         .reference-cell {
+         /* For uniformity and to wrap long reference text, limit the reference cell's width. */
+         width: 25%;
+         padding-top: 20px;
+         padding-bottom: 20px;
+         }
+         .sample audio {
+         vertical-align: middle;
+         padding-left: 3px;
+         padding-right: 3px;
+         }
+         .round-button {
+         box-sizing: border-box;
+         display:block;
+         width:30px;
+         height:30px;
+         padding-top: 8px;
+         padding-left: 3px;
+         line-height: 6px;
+         border: 1.2px solid #000;
+         border-radius: 50%;
+         color: #000;
+         text-align:center;
+         background-color: rgba(0,0,0,0.00);
+         font-size:6px;
+         box-shadow: 0px 0px 2px rgba(0,0,0,1);
+         transition: all 0.2s ease;
+         }
+         .round-button:hover {
+         background-color: rgba(0,0,0,0.0);
+         box-shadow: 0px 0px 4px rgba(0,0,0,1);
+         }
+         .round-button:active {
+         background-color: rgba(0,0,0,0.01);
+         box-shadow: 0px 0px 1px rgba(0,0,0,1);
+         }
+      </style>
+   </head>
+   <body>
+     <div class="main">
+       <article>
+         <header>
+            <h1>WaveFit: An Iterative and Non-autoregressive Neural Vocoder based on Fixed-Point Iteration</h1>
+         </header>
+      </article>
+      <div>
+        <p>
+		<a href="https://sites.google.com/site/yumakoizumiweb/profile-english">Yuma Koizumi</a>,
+	  	<a href="https://scholar.google.com/citations?user=dTORL1oAAAAJ&hl=en">Kohei Yatabe</a>,
+	  	<a href="https://research.google/people/HeigaZen/">Heiga Zen</a>,
+	  	<a href="http://bacchiani.net/resume/resume.html">Michiel Bacchiani</a>
+		</p>
+      </div>
+      <div>
+      <p><b>Abstract:</b>Denoising diffusion probabilistic models (DDPMs) and generative adversarial networks (GANs) are popular generative models for neural vocoders. DDPMs and GANs can be characterized by the iterative denoising framework and adversarial training, respectively. In this study, we propose a fast and high-quality neural vocoder called WaveFit which integrates the essence of GANs into a DDPM-like iterative framework based on fixed-point iteration. WaveFit iteratively denoises an input signal, and trains a deep neural network (DNN) for minimizing an adversarial loss calculated from intermediate outputs of all iterations. Subjective (side-by-side) listening tests showed no statistically significant differences in naturalness between human natural speech and those synthesized by WaveFit (at the 5th iteration). Furthermore, the inference speed of WaveFit was more than 240 times faster than WaveRNN.<br /><br />
+      <img src="data/overview.png" width="700px" class="center"/> <br />
+      </p>
+
+
+
+      <h3>Contents:</h3>
+      <p>
+		<a href="#animation">Comparison animation of SpecGrad, InferGrad, and WaveFit's waveform generation in 5 refinement iterations</a><br>
+		<a href="#intermediate">Intermediate outputs examples of a WaveFit-5 model</a><br>
+		<a href="#ddpm">Comparison with DDPM-based models and WaveRNN</a><br />
+		<a href="#gan">Comparison with GAN-based models on LibriTTS</a><br />
+      </p>
+
+
+
+      <h3 id="animation">Comparison animation of SpecGrad [1], InferGrad [2], and WaveFit's waveform generation in 5 refinement iterations:</h3>
+
+<br/>
+Note: These three neural vocoders have the same network architecture with the same model size, and were trained on the same dataset.
+
+
+      <img src="data/comparison_small.gif" width="1200px" class="center">
+      <br/>
+
+<center>
+<b>Ground-truth</b><br />
+<audio controls=""><source src="data/5iter_gt.wav"></audio><br /><br />
+<table>
+<tbody>
+    <tr>
+        <th align="center"></th>
+        <td align="center"> SpecGrad [1]<br /></td>
+        <td align="center"> InferGrad [2]<br /></td>
+        <td align="center"> WaveFit<br /></td>
+    </tr>
+    <tr>
+        <th align="center">Iteration 1</th>
+        <td align="center"> <audio controls=""><source src="data/5iter_specgrad_1.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/5iter_infergrad_1.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/5iter_wavefit_1.wav"></audio></td>
+    </tr>
+    <tr>
+        <th align="center">Iteration 2</th>
+        <td align="center"> <audio controls=""><source src="data/5iter_specgrad_2.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/5iter_infergrad_2.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/5iter_wavefit_2.wav"></audio></td>
+    </tr>
+    <tr>
+        <th align="center">Iteration 3</th>
+        <td align="center"> <audio controls=""><source src="data/5iter_specgrad_3.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/5iter_infergrad_3.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/5iter_wavefit_3.wav"></audio></td>
+    </tr>
+    <tr>
+        <th align="center">Iteration 4</th>
+        <td align="center"> <audio controls=""><source src="data/5iter_specgrad_4.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/5iter_infergrad_4.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/5iter_wavefit_4.wav"></audio></td>
+    </tr>
+    <tr>
+        <th align="center">Final output</th>
+        <td align="center"> <audio controls=""><source src="data/5iter_specgrad_5.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/5iter_infergrad_5.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/5iter_wavefit_5.wav"></audio></td>
+    </tr>
+</tbody>
+</table><br /><br />
+</center>
+</p>
+
+
+<h3 id="intermediate">Intermediate outputs examples of a WaveFit-5 model:</h3>
+<p>
+<table>
+<tbody>
+    <tr>
+        <th align="center"></th>
+        <td align="center"> Example 1<br /></td>
+        <td align="center"> Example 2<br /></td>
+        <td align="center"> Example 3<br /></td>
+        <td align="center"> Example 4<br /></td>
+    </tr>
+    <tr>
+        <th align="center">Ground-truth</th>
+        <td align="center"> <audio controls=""><source src="data/wf5_gt_0.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/wf5_gt_1.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/wf5_gt_2.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/wf5_gt_3.wav"></audio></td>
+    </tr>
+    <tr>
+        <th align="center">Iteration 1</th>
+        <td align="center"> <audio controls=""><source src="data/wf5_iter1_0.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/wf5_iter1_1.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/wf5_iter1_2.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/wf5_iter1_3.wav"></audio></td>
+    </tr>
+    <tr>
+        <th align="center">Iteration 2</th>
+        <td align="center"> <audio controls=""><source src="data/wf5_iter2_0.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/wf5_iter2_1.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/wf5_iter2_2.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/wf5_iter2_3.wav"></audio></td>
+    </tr>
+    <tr>
+        <th align="center">Iteration 3</th>
+        <td align="center"> <audio controls=""><source src="data/wf5_iter3_0.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/wf5_iter3_1.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/wf5_iter3_2.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/wf5_iter3_3.wav"></audio></td>
+    </tr>
+    <tr>
+        <th align="center">Iteration 4</th>
+        <td align="center"> <audio controls=""><source src="data/wf5_iter4_0.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/wf5_iter4_1.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/wf5_iter4_2.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/wf5_iter4_3.wav"></audio></td>
+    </tr>
+    <tr>
+        <th align="center">Final output</th>
+        <td align="center"> <audio controls=""><source src="data/wf5_iter5_0.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/wf5_iter5_1.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/wf5_iter5_2.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/wf5_iter5_3.wav"></audio></td>
+    </tr>
+</tbody>
+</table><br /><br />
+</p>
+
+
+
+
+
+
+<h3 id="ddpm">Comparison with DDPM-based models and WaveRNN:</h3>
+<p>
+<table>
+<tbody>
+    <tr>
+        <th align="center"></th>
+        <td align="center"> Example 1<br /></td>
+        <td align="center"> Example 2<br /></td>
+        <td align="center"> Example 3<br /></td>
+        <td align="center"> Example 4<br /></td>
+    </tr>
+    <tr>
+        <th align="center">Ground-truth</th>
+        <td align="center"> <audio controls=""><source src="data/ddpm_gt_0.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/ddpm_gt_1.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/ddpm_gt_2.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/ddpm_gt_3.wav"></audio></td>
+    </tr>
+    <tr>
+        <th align="center">WaveRNN [3]</th>
+        <td align="center"> <audio controls=""><source src="data/ddpm_wrnn_0.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/ddpm_wrnn_1.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/ddpm_wrnn_2.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/ddpm_wrnn_3.wav"></audio></td>
+    </tr>
+    <tr>
+        <th align="center">SpecGrad-3 [1]</th>
+        <td align="center"> <audio controls=""><source src="data/ddpm_sg_0.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/ddpm_sg_1.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/ddpm_sg_2.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/ddpm_sg_3.wav"></audio></td>
+    </tr>
+    <tr>
+        <th align="center">InferGrad-3 [2]</th>
+        <td align="center"> <audio controls=""><source src="data/ddpm_ig_0.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/ddpm_ig_1.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/ddpm_ig_2.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/ddpm_ig_3.wav"></audio></td>
+    </tr>
+    <tr>
+        <th align="center">WaveFit-3</th>
+        <td align="center"> <audio controls=""><source src="data/ddpm_wf3_0.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/ddpm_wf3_1.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/ddpm_wf3_2.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/ddpm_wf3_3.wav"></audio></td>
+    </tr>
+    <tr>
+        <th align="center">WaveFit-5</th>
+        <td align="center"> <audio controls=""><source src="data/ddpm_wf5_0.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/ddpm_wf5_1.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/ddpm_wf5_2.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/ddpm_wf5_3.wav"></audio></td>
+    </tr>
+</tbody>
+</table><br /><br />
+</p>
+
+
+
+
+
+
+
+<h3 id="gan">Comparison with GAN-based models on LibriTTS:</h3>
+<p>
+Note1: Output samples of MB-MelGAN [4] and HiFi-GAN [5] were downloaded from <a href="https://github.com/kan-bayashi/ParallelWaveGAN">Dr. Tomoki Hayashi's unofficial implementations</a>.
+<br /><br />
+
+Note2: The list of sample ids used in the subjective test on the LibriTTS dataset [6] is 
+<a href="data/libritts_test_sample_list.txt">here</a>
+.
+<br /><br />
+
+<table>
+<tbody>
+    <tr>
+        <th align="center"></th>
+        <td align="center"> Example 1 (1089_134686_000007_000004)<br /></td>
+        <td align="center"> Example 2 (1089_134686_000012_000000)<br /></td>
+        <td align="center"> Example 3 (121_127105_000044_000003)<br /></td>
+        <td align="center"> Example 4 (1284_1180_000024_000001)<br /></td>
+    </tr>
+    <tr>
+        <th align="center">Ground-truth</th>
+        <td align="center"> <audio controls=""><source src="data/gan_gt_0.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/gan_gt_1.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/gan_gt_2.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/gan_gt_3.wav"></audio></td>
+    </tr>
+    <tr>
+        <th align="center">MB-MelGAN [4]</th>
+        <td align="center"> <audio controls=""><source src="data/gan_mel_0.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/gan_mel_1.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/gan_mel_2.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/gan_mel_3.wav"></audio></td>
+    </tr>
+    <tr>
+        <th align="center">HiFi-GAN [5]</th>
+        <td align="center"> <audio controls=""><source src="data/gan_hifi_0.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/gan_hifi_1.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/gan_hifi_2.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/gan_hifi_3.wav"></audio></td>
+    </tr>
+    <tr>
+        <th align="center">WaveFit-5</th>
+        <td align="center"> <audio controls=""><source src="data/gan_wf5_0.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/gan_wf5_1.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/gan_wf5_2.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/gan_wf5_3.wav"></audio></td>
+    </tr>
+</tbody>
+</table><br /><br />
+</p>
+
+
+
+  <h3 id="references">References:</h3>
+<p>
+[1] Y. Koizumi, H. Zen, K. Yatabe, N. Chen, and  M. Bacchiani, “SpecGrad: Diffusion Probabilistic Model based Neural Vocoder with Adaptive Noise Spectral Shaping,”  in Proc. Interspeech, 2022. [<a href="https://arxiv.org/abs/2203.16749">paper</a>]<br/>
+[2] Z. Chen, X. Tan, K. Wang, S. Pan, D. Mandic, L. He, and S. Zhao, “InferGrad: Improving Diffusion Models for Vocoder by Considering Inference in Training,” in Proc. ICASSP, 2022. [<a href="https://arxiv.org/abs/2202.03751">paper</a>]<br/>
+[3] N. Kalchbrenner, W. Elsen, K. Simonyan, S. Noury, N. Casagrande, W. Lockhart, F. Stimberg, A. van den Oord, S. Dieleman, and K. Kavukcuoglu, "Efficient Neural Audio Synthesis," in Proc. ICML, 2018. [<a href="https://arxiv.org/abs/1802.08435">paper</a>]<br/>
+[4] G. Yang, S. Yang, K. Liu, P. Fang, W. Chen, and L. Xie, "Multi-band MelGAN: Faster Waveform Generation for High-Quality Text-to-Speech," in Proc. SLT, 2021. [<a href="https://arxiv.org/abs/2005.05106">paper</a>]<br/>
+[5] J. Kong, J. Kim, and J. Bae, "HiFi-GAN: Generative Adversarial Networks for Efficient and High Fidelity Speech Synthesis," in Proc. NeurIPS, 2020. [<a href="https://arxiv.org/abs/2010.05646">paper</a>]<br/>
+[6] H. Zen, V. Dang, R. Clark, Y. Zhang, R. J. Weiss, Y. Jia, Z. Chen, and Y. Wu, "LibriTTS: A Corpus Derived from LibriSpeech for Text-to-Speech," in Proc. Interspeech, 2019. [<a href="https://arxiv.org/abs/1904.02882">paper</a>]<br/>
+</p>
+
+
+      </div>
+   </body>
+</html>

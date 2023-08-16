@@ -189,6 +189,93 @@ Each table includes the studio-recorded clean target, simulated noisy signal, an
 </p>
 
 
+<hr>
+<h2 id="intermediate">Importance of text-conditioning (force-alignment results):</h2> 
+
+<p>
+To demonstrate the effects of text-conditioning in more detail, we performed force-alignment between the restored speech and the ground-truth text. The following examples show that if the input is severely distorted, even using w2v-BERT features, some words cannot be restored, resulting in less accurate force-alignment. Alignment of phonemes and waveforms is especially important for training the acoustic model in a TTS system. Therefore, text-conditioning is very important in Miipher purpose (and perhaps also in robust speech restoration).
+</p>
+
+
+<p>
+
+<table>
+<tbody>
+    <b>Example 1: </b> <I>Attempting to appease dictatorial regimes with custom beanie babies is a tried and true strategy.</I> <br />
+    <tr>
+        <th align="center"> </th>
+        <th align="center"> 
+			Clean target<br />
+			<audio controls=""><source src="data/force_align/force_align_ex1_clean.wav"></audio> <br />
+			<img src="data/force_align/force_align_ex1_clean.png" width="1200" alt=""/>
+		</th>
+    </tr>
+    <tr>
+        <th align="center"> </th>
+        <th align="center"> 
+			Noisy input<br />
+			<audio controls=""><source src="data/force_align/force_align_ex1_noisy.wav"></audio> <br />
+			<img src="data/force_align/force_align_ex1_noisy.png" width="1200" alt=""/>
+		</th>
+    </tr>
+    <tr>
+        <th align="center"> </th>
+        <th align="center"> 
+			Miipher output: w2v-BERT <font color="red">with</font> text-conditioning<br />
+			<audio controls=""><source src="data/force_align/force_align_ex1_w2vb_full.wav"></audio> <br />
+			<img src="data/force_align/force_align_ex1_w2vb_full.png" width="1200" alt=""/>
+		</th>
+    </tr>
+    <tr>
+        <th align="center"> </th>
+        <th align="center"> 
+			Miipher output: w2v-BERT <font color="red">without</font> text-conditioning<br />
+			<audio controls=""><source src="data/force_align/force_align_ex1_w2vb_wo_text.wav"></audio> <br />
+			<img src="data/force_align/force_align_ex1_w2vb_wo_text.png" width="1200" alt=""/>
+		</th>
+    </tr>
+</tbody>
+</table><br />
+
+<table>
+<tbody>
+    <b>Example 2: </b> <I>The Senate passed a bill that would punish China for keeping its currency artificially low.</I> <br />
+    <tr>
+        <th align="center"> </th>
+        <th align="center"> 
+			Clean target<br />
+			<audio controls=""><source src="data/force_align/force_align_ex2_clean.wav"></audio> <br />
+			<img src="data/force_align/force_align_ex2_clean.png" width="1200" alt=""/>
+		</th>
+    </tr>
+    <tr>
+        <th align="center"> </th>
+        <th align="center"> 
+			Noisy input<br />
+			<audio controls=""><source src="data/force_align/force_align_ex2_noisy.wav"></audio> <br />
+			<img src="data/force_align/force_align_ex2_noisy.png" width="1200" alt=""/>
+		</th>
+    </tr>
+    <tr>
+        <th align="center"> </th>
+        <th align="center"> 
+			Miipher output: w2v-BERT <font color="red">with</font> text-conditioning<br />
+			<audio controls=""><source src="data/force_align/force_align_ex2_w2vb_full.wav"></audio> <br />
+			<img src="data/force_align/force_align_ex2_w2vb_full.png" width="1200" alt=""/>
+		</th>
+    </tr>
+    <tr>
+        <th align="center"> </th>
+        <th align="center"> 
+			Miipher output: w2v-BERT <font color="red">without</font> text-conditioning<br />
+			<audio controls=""><source src="data/force_align/force_align_ex2_w2vb_wo_text.wav"></audio> <br />
+			<img src="data/force_align/force_align_ex2_w2vb_wo_text.png" width="1200" alt=""/>
+		</th>
+    </tr>
+</tbody>
+</table><br />
+
+</p>
 
 
 

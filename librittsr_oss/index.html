@@ -101,21 +101,21 @@ For more information, refer to the dataset paper: Y. Koizumi, et al., "LibriTTS-
 
 
 <hr>
-<h2 id="intermediate">Ground-truth and proprietry TTS example comparison:</h2>
+<h2 id="intermediate">Ground-truth and official TTS example comparison:</h2>
 <p>
 
-<p>See <a href="/df-conformer/librittsr/index.html">this page</a>.</p>
+<p>For results shown in our paper, see <a href="/df-conformer/librittsr/index.html">this page</a>.</p>
 
 
 <hr>
-<h2 id="intermediate">OSS TTS toolkit generated speech comparison:</h2>
+<h2 id="intermediate">Examples using OSS TTS toolkits</h2>
 <p>
-This section shows output examples of multi-speaker TTS models trained on either LibriTTS or LibriTTS-R. The TTS model consists of a Transformer phoneme-to-mel acoustic model [1] and a HiFiGAN mel-to-waveform neural vocoder [2]. All models were trained with the same model size, hyper-parameters, and training steps. For details, see all-in-one scripts in these open-source toolkits:
+This section shows additional results of multi-speaker TTS models using OSS toolkits trained on either LibriTTS or LibriTTS-R. The TTS model consists of a Transformer phoneme-to-mel acoustic model [1] and a HiFiGAN mel-to-waveform neural vocoder [2]. All models were trained with the same model size, hyper-parameters, and training steps. For details, see all-in-one scripts in these open-source toolkits:
 <ul>
-<li>Baseline LibriTTS Transformer/GST/X-vector TTS recipe in <a href="https://github.com/espnet/espnet/blob/master/egs2/libritts/tts1/conf/tuning/train_gst%2Bxvector_transformer.yaml">espnet/espnet</a>.</li>
-<li>Baseline LibriTTS HiFiGAN vocoder recipe in <a href="https://github.com/kan-bayashi/ParallelWaveGAN/blob/master/egs/libritts/voc1/conf/hifigan.v1.yaml">kan-bayashi/ParallelWaveGAN.</a></li>
-<li>Our LibriTTS-R Transformer/GST/X-vector TTS recipe in <a href="https://github.com/espnet/espnet/blob/master/egs2/libritts_r/tts1/conf/tuning/train_gst%2Bxvector_transformer.yaml">espnet/espnet</a>.</li>
-<li>Our LibriTTS-R HiFiGAN vocoder recipe in <a href="https://github.com/kan-bayashi/ParallelWaveGAN/pull/414">kan-bayashi/ParallelWaveGAN (WIP)</a>.</li>
+<li>Baseline LibriTTS Transformer/GST/X-vector TTS recipe in <a href="https://github.com/espnet/espnet/blob/master/egs2/libritts/tts1/run.sh">espnet/espnet</a>.</li>
+<li>Baseline LibriTTS HiFiGAN vocoder recipe in <a href="https://github.com/kan-bayashi/ParallelWaveGAN/blob/master/egs/libritts/voc1/run.sh">kan-bayashi/ParallelWaveGAN.</a></li>
+<li>Our LibriTTS-R Transformer/GST/X-vector TTS recipe in <a href="https://github.com/espnet/espnet/blob/master/egs2/libritts_r/tts1/run.sh">espnet/espnet</a>.</li>
+<li>Our LibriTTS-R HiFiGAN vocoder recipe in <a href="https://github.com/kan-bayashi/ParallelWaveGAN/pull/414">kan-bayashi/ParallelWaveGAN (PR)</a>.</li>
 </ul>
 <b><i>The pretrained models in those toolkits are COMING SOON!</i></b>
 </p>

@@ -94,9 +94,16 @@ It is derived by applying speech restoration to the LibriTTS corpus, which consi
 The constituent samples of LibriTTS-R are identical to those of LibriTTS, with only the sound quality improved.
 Experimental results show that the LibriTTS-R ground-truth samples showed significantly improved sound quality compared to those in LibriTTS. In addition, neural end-to-end TTS trained with LibriTTS-R achieved speech naturalness on par with that of the ground-truth samples.
 <br /><br />
-The corpus is freely available for download from <a href="http://www.openslr.org/141/">http://www.openslr.org/141/</a>
+The corpus is freely available for download from <a href="http://www.openslr.org/141/">http://www.openslr.org/141/</a>>
+
 <br /><br />
-For more information, refer to the dataset paper: Y. Koizumi, et al., "LibriTTS-R: Restoration of a Large-Scale Multi-Speaker TTS Corpus", Interspeech 2023. If you use the LibriTTS-R corpus in your work, please cite the dataset paper where it was introduced.
+For more information, refer to the dataset paper: Y. Koizumi, et al., "LibriTTS-R: Restoration of a Large-Scale Multi-Speaker TTS Corpus", Interspeech 2023. If you use the LibriTTS-R corpus in your work, please cite the dataset paper where it was introduced.<br /><br />
+
+<font color="red"><b>
+Postscript (Sept. 4th, 2023):
+</b></font>
+ We have published the list of file paths where speech restoration may have failed. Speech restoration is not always perfect, so some phonemes may be lost or changed during the restoration process. We ran automatic speech recognition (ASR) on all LibriTTS-R samples and created these lists of samples with a word error rate (WER) above a certain threshold. The experiments in the LibriTTS-R paper were conducted using these files that may have failed to be restored. However, the files included in these lists are likely to have uncorresponding transcripts and waveforms. Therefore, we recommend excluding them during model training. The list can be also download from 
+<a href="http://www.openslr.org/141/">the OpenSLR dataset page</a>.
       </p>
 
 

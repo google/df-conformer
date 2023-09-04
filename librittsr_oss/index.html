@@ -1,0 +1,314 @@
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>LibriTTS-R: Restoration of a Large-Scale Multi-Speaker TTS Corpus (OSS demo)</title>
+      <link rel="stylesheet" type="text/css" href="stylesheet.css"/>
+      <script>
+         function play(path) {{
+           var player = document.getElementById('player');
+           player.src = path;
+           player.play();
+         }}
+      </script>
+      <style>
+         .audio-cell {
+         /* Center audio widgets in the table cell. */
+         text-align: center;
+         padding-bottom: 1px;
+         padding-top: 1px;
+         }
+         .audio-cell-padded {
+         text-align: center;
+         padding-bottom: 10px;
+         padding-top: 10px;
+         }
+         .audio-header {
+         /* Don't wrap header text. */
+         white-space: nowrap;
+         /* Some breaking space between headers for readability. */
+         padding-right: 5px;
+         padding-left: 5px;
+         }
+         .reference-cell {
+         /* For uniformity and to wrap long reference text, limit the reference cell's width. */
+         width: 25%;
+         padding-top: 20px;
+         padding-bottom: 20px;
+         }
+         .sample audio {
+         vertical-align: middle;
+         padding-left: 3px;
+         padding-right: 3px;
+         }
+         .round-button {
+         box-sizing: border-box;
+         display:block;
+         width:30px;
+         height:30px;
+         padding-top: 8px;
+         padding-left: 3px;
+         line-height: 6px;
+         border: 1.2px solid #000;
+         border-radius: 50%;
+         color: #000;
+         text-align:center;
+         background-color: rgba(0,0,0,0.00);
+         font-size:6px;
+         box-shadow: 0px 0px 2px rgba(0,0,0,1);
+         transition: all 0.2s ease;
+         }
+         .round-button:hover {
+         background-color: rgba(0,0,0,0.0);
+         box-shadow: 0px 0px 4px rgba(0,0,0,1);
+         }
+         .round-button:active {
+         background-color: rgba(0,0,0,0.01);
+         box-shadow: 0px 0px 1px rgba(0,0,0,1);
+         }
+      </style>
+   </head>
+   <body>
+     <div class="main">
+       <article>
+         <header>
+            <h1>LibriTTS-R: Restoration of a Large-Scale Multi-Speaker TTS Corpus</h1>
+         </header>
+      </article>
+      <div>
+        <p>
+		<a href="https://sites.google.com/site/yumakoizumiweb/profile-english">Yuma Koizumi</a>,
+	  	<a href="https://research.google/people/HeigaZen/">Heiga Zen</a>,
+	  	<a href="https://scholar.google.co.jp/citations?user=enV4FrIAAAAJ">Shigeki Karita</a>,
+	  	Yifan Ding,
+	  	<a href="https://scholar.google.com/citations?user=dTORL1oAAAAJ">Kohei Yatabe</a>,
+	  	<a href="https://scholar.google.com/citations?user=3_2yoWwAAAAJ">Nobuyuki Morioka</a>,
+	  	<a href="https://scholar.google.com/citations?user=EilVnKwAAAAJ">Yu Zhang</a>
+	  	<a href="https://scholar.google.com/citations?user=RNdGVHoAAAAJ">Wei Han</a>
+	  	<a href="https://scholar.google.com/citations?user=6xaz-r0AAAAJ">Ankur Bapna</a>
+	  	<a href="http://bacchiani.net/resume/resume.html">Michiel Bacchiani</a>
+		</p>
+      </div>
+      <p><b>Abstract: </b>This paper introduces a new speech dataset called "LibriTTS-R" designed for text-to-speech (TTS) use. 
+It is derived by applying speech restoration to the LibriTTS corpus, which consists of 585 hours of speech data at 24 kHz sampling rate from 2,456 speakers and the corresponding texts.
+The constituent samples of LibriTTS-R are identical to those of LibriTTS, with only the sound quality improved.
+Experimental results show that the LibriTTS-R ground-truth samples showed significantly improved sound quality compared to those in LibriTTS. In addition, neural end-to-end TTS trained with LibriTTS-R achieved speech naturalness on par with that of the ground-truth samples.
+<br /><br />
+The corpus is freely available for download from <a href="http://www.openslr.org/141/">http://www.openslr.org/141/</a>
+<br /><br />
+For more information, refer to the dataset paper: Y. Koizumi, et al., "LibriTTS-R: Restoration of a Large-Scale Multi-Speaker TTS Corpus", Interspeech 2023. If you use the LibriTTS-R corpus in your work, please cite the dataset paper where it was introduced.
+      </p>
+
+
+
+<hr>
+<h2 id="intermediate">Ground-truth and official TTS example comparison:</h2>
+<p>
+
+<p>For results shown in our paper, see <a href="/df-conformer/librittsr/index.html">this page</a>.</p>
+
+
+<hr>
+<h2 id="intermediate">Examples using OSS TTS toolkits</h2>
+<p>
+This section shows additional results of multi-speaker TTS models using OSS toolkits trained on either LibriTTS or LibriTTS-R. The TTS model consists of a Transformer phoneme-to-mel acoustic model [1] and a HiFiGAN mel-to-waveform neural vocoder [2]. All models were trained with the same model size, hyper-parameters, and training steps. For details, see all-in-one scripts in these open-source toolkits:
+<ul>
+<li>Baseline LibriTTS Transformer/GST/X-vector TTS recipe in <a href="https://github.com/espnet/espnet/blob/master/egs2/libritts/tts1/run.sh">espnet/espnet</a>.</li>
+<li>Baseline LibriTTS HiFiGAN vocoder recipe in <a href="https://github.com/kan-bayashi/ParallelWaveGAN/blob/master/egs/libritts/voc1/run.sh">kan-bayashi/ParallelWaveGAN.</a></li>
+<li>Our LibriTTS-R Transformer/GST/X-vector TTS recipe in <a href="https://github.com/espnet/espnet/blob/master/egs2/libritts_r/tts1/run.sh">espnet/espnet</a>.</li>
+<li>Our LibriTTS-R HiFiGAN vocoder recipe in <a href="https://github.com/kan-bayashi/ParallelWaveGAN/pull/414">kan-bayashi/ParallelWaveGAN (PR)</a>.</li>
+</ul>
+<b><i>The pretrained models in those toolkits are COMING SOON!</i></b>
+</p>
+
+<p>
+<table>
+<tbody>
+    <b>Example1: </b> <I>The Edison construction department took entire charge of the installation of the plant, and the formal opening was attended on October 1, 1883, by Mr. Edison, who then remained a week in ceaseless study and consultation over the conditions developed by this initial three-wire underground plant.</I> <br />
+    <tr>
+        <td align="center"> Speaker ID</td>
+        <td align="center"> LibriTTS</td>
+        <td align="center"> LibriTTS-R</td>
+    </tr>
+    <tr>
+        <td align="center"> 103</audio></td>
+        <td align="center"> <audio controls=""><source src="data/baseline/103_1241_000000_000001.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/ours/103_1241_000000_000001.wav"></audio></td>
+    </tr>
+    <tr>
+        <td align="center"> 1841</audio></td>
+        <td align="center"> <audio controls=""><source src="data/baseline/1841_150351_000000_000001.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/ours/1841_150351_000000_000001.wav"></audio></td>
+    </tr>
+    <tr>
+        <td align="center"> 1121</audio></td>
+        <td align="center"> <audio controls=""><source src="data/baseline/1121_132777_000000_000001.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/ours/1121_132777_000000_000001.wav"></audio></td>
+    </tr>
+    <tr>
+        <td align="center"> 5717</audio></td>
+        <td align="center"> <audio controls=""><source src="data/baseline/5717_100145_000000_000001.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/ours/5717_100145_000000_000001.wav"></audio></td>
+    </tr>
+</tbody>
+</table><br />
+
+<table>
+<tbody>
+    <b>Example2: </b> <I>Her sea going qualities were excellent, and would have amply sufficed for a circumnavigation of the globe.</I> <br />
+    <tr>
+        <td align="center"> Speaker ID</td>
+        <td align="center"> LibriTTS</td>
+        <td align="center"> LibriTTS-R</td>
+    </tr>
+    <tr>
+        <td align="center"> 103</audio></td>
+        <td align="center"> <audio controls=""><source src="data/baseline/103_1241_000000_000002.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/ours/103_1241_000000_000002.wav"></audio></td>
+    </tr>
+    <tr>
+        <td align="center"> 1841</audio></td>
+        <td align="center"> <audio controls=""><source src="data/baseline/1841_150351_000000_000002.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/ours/1841_150351_000000_000002.wav"></audio></td>
+    </tr>
+    <tr>
+        <td align="center"> 1121</audio></td>
+        <td align="center"> <audio controls=""><source src="data/baseline/1121_132777_000000_000002.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/ours/1121_132777_000000_000002.wav"></audio></td>
+    </tr>
+    <tr>
+        <td align="center"> 5717</audio></td>
+        <td align="center"> <audio controls=""><source src="data/baseline/5717_100145_000000_000002.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/ours/5717_100145_000000_000002.wav"></audio></td>
+    </tr>
+</tbody>
+</table><br />
+
+<table>
+<tbody>
+    <b>Example3: </b> <I>Therefore her Majesty paid no attention to anyone and no one paid any attention to her.</I> <br />
+    <tr>
+        <td align="center"> Speaker ID</td>
+        <td align="center"> LibriTTS</td>
+        <td align="center"> LibriTTS-R</td>
+    </tr>
+    <tr>
+        <td align="center"> 103</audio></td>
+        <td align="center"> <audio controls=""><source src="data/baseline/103_1241_000000_000003.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/ours/103_1241_000000_000003.wav"></audio></td>
+    </tr>
+    <tr>
+        <td align="center"> 1841</audio></td>
+        <td align="center"> <audio controls=""><source src="data/baseline/1841_150351_000000_000003.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/ours/1841_150351_000000_000003.wav"></audio></td>
+    </tr>
+    <tr>
+        <td align="center"> 1121</audio></td>
+        <td align="center"> <audio controls=""><source src="data/baseline/1121_132777_000000_000003.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/ours/1121_132777_000000_000003.wav"></audio></td>
+    </tr>
+    <tr>
+        <td align="center"> 5717</audio></td>
+        <td align="center"> <audio controls=""><source src="data/baseline/5717_100145_000000_000003.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/ours/5717_100145_000000_000003.wav"></audio></td>
+    </tr>
+</tbody>
+</table><br />
+
+<table>
+<tbody>
+    <b>Example4: </b> <I>The Free State Hotel served as barracks.</I> <br />
+    <tr>
+        <td align="center"> Speaker ID</td>
+        <td align="center"> LibriTTS</td>
+        <td align="center"> LibriTTS-R</td>
+    </tr>
+    <tr>
+        <td align="center"> 103</audio></td>
+        <td align="center"> <audio controls=""><source src="data/baseline/103_1241_000000_000004.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/ours/103_1241_000000_000004.wav"></audio></td>
+    </tr>
+    <tr>
+        <td align="center"> 1841</audio></td>
+        <td align="center"> <audio controls=""><source src="data/baseline/1841_150351_000000_000004.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/ours/1841_150351_000000_000004.wav"></audio></td>
+    </tr>
+    <tr>
+        <td align="center"> 1121</audio></td>
+        <td align="center"> <audio controls=""><source src="data/baseline/1121_132777_000000_000004.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/ours/1121_132777_000000_000004.wav"></audio></td>
+    </tr>
+    <tr>
+        <td align="center"> 5717</audio></td>
+        <td align="center"> <audio controls=""><source src="data/baseline/5717_100145_000000_000004.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/ours/5717_100145_000000_000004.wav"></audio></td>
+    </tr>
+</tbody>
+</table><br />
+
+<table>
+<tbody>
+    <b>Example5: </b> <I>The military force, partly rabble, partly organized, had meanwhile moved into the town.</I> <br />
+    <tr>
+        <td align="center"> Speaker ID</td>
+        <td align="center"> LibriTTS</td>
+        <td align="center"> LibriTTS-R</td>
+    </tr>
+    <tr>
+        <td align="center"> 103</audio></td>
+        <td align="center"> <audio controls=""><source src="data/baseline/103_1241_000000_000005.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/ours/103_1241_000000_000005.wav"></audio></td>
+    </tr>
+    <tr>
+        <td align="center"> 1841</audio></td>
+        <td align="center"> <audio controls=""><source src="data/baseline/1841_150351_000000_000005.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/ours/1841_150351_000000_000005.wav"></audio></td>
+    </tr>
+    <tr>
+        <td align="center"> 1121</audio></td>
+        <td align="center"> <audio controls=""><source src="data/baseline/1121_132777_000000_000005.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/ours/1121_132777_000000_000005.wav"></audio></td>
+    </tr>
+    <tr>
+        <td align="center"> 5717</audio></td>
+        <td align="center"> <audio controls=""><source src="data/baseline/5717_100145_000000_000005.wav"></audio></td>
+        <td align="center"> <audio controls=""><source src="data/ours/5717_100145_000000_000005.wav"></audio></td>
+    </tr>
+</tbody>
+</table><br />
+
+</p>
+
+
+
+<hr>
+<h2 id="references">Acknowledgement:</h2>
+<p>
+We appreciate valuable feedback and support from 
+<b>Tomoki Hayashi and Shinji Watanabe to setup the OSS toolkits used in thoese results,</b>
+and
+Daniel S. Park,
+Hakan Erdogan,
+Haruko Ishikawa,
+Hynek Hermansky
+Johan Schalkwyk,
+John R. Hershey,
+Keisuke Kinoshita,
+Llion Jones,
+Neil Zeghidour,
+Quan Wang,
+Richard William Sproat,
+Ron Weiss,
+Shiori Yamashita,
+Yotaro Kubo, and
+Victor Ungureanu for research activities at Google.
+</p>
+
+<h2 id="references">References:</h2>
+<p>
+[1] Naihan Li, Shujie Liu, Yanqing Liu, Sheng Zhao, and Ming Liu. 2019. Neural speech synthesis with transformer network. In Proceedings of the Thirty-Third AAAI Conference on Artificial Intelligence and Thirty-First Innovative Applications of Artificial Intelligence Conference and Ninth AAAI Symposium on Educational Advances in Artificial Intelligence (AAAI'19/IAAI'19/EAAI'19). AAAI Press, Article 823, 6706–6713. <a href="https://doi.org/10.1609/aaai.v33i01.33016706">https://doi.org/10.1609/aaai.v33i01.33016706</a><br>
+[2] Jungil Kong, Jaehyeon Kim, and Jaekyoung Bae. 2020. HiFi-GAN: generative adversarial networks for efficient and high fidelity speech synthesis. In Proceedings of the 34th International Conference on Neural Information Processing Systems (NIPS'20). Curran Associates Inc., Red Hook, NY, USA, Article 1428, 17022–17033. <a href="https://arxiv.org/abs/2010.05646">https://arxiv.org/abs/2010.05646</a><br>
+</p>
+
+      </div>
+   </body>
+</html>

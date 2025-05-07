@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReverbMiipher: Generative Speech Restoration meets Reverberation Characteristics Controllability</title>
+
+    <style>
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            line-height: 1.6;
+            margin: 0 auto;
+            padding: 20px;
+            max-width: 1600px;
+            color: #333;
+        }
+        /* --- HEADING STYLES --- */
+        h1 { /* Main page title */
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db; 
+            padding-bottom: 8px;
+            text-align: center; 
+            font-size: 1.7em;
+            margin-bottom: 0.5em;
+        }
+        /* Consistent styling for all main section headers (h2) */
+        h2 { 
+            color: #2c3e50;
+            border-bottom: 1px solid #3498db; 
+            padding-bottom: 8px; 
+            text-align: left; 
+            margin-top: 2.5em;
+            margin-bottom: 0.75em; 
+            font-size: 1.3em;
+            width: 100%; 
+            box-sizing: border-box; 
+        }
+        .section-intro-text { /* Style for descriptions under section headers */
+            font-size: 0.9em;
+            color: #555;
+            margin-top: 0;
+            margin-bottom: 1.5em; 
+            padding-left: 5px; 
+            text-align: justify; 
+        }
+        
+        .description { /* Original description box style */
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 12px;
+            margin-bottom: 2em;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+        .authors {
+            text-align: center;
+            font-style: italic;
+            margin-bottom: 2em;
+            color: #555;
+            font-size: 1.0em;
+        }
+        .abstract {
+            background-color: #eaf2f8;
+            border-left: 5px solid #2980b9;
+            padding: 15px;
+            margin-top: 1em;
+            margin-bottom: 2.5em;
+            border-radius: 5px;
+        }
+        .abstract h2 { 
+            margin-top: 0; 
+            margin-bottom: 0.6em; 
+            padding-bottom: 5px;
+            font-size: 1.2em; 
+            border-bottom: 1px solid #bdc3c7; 
+        }
+        .abstract p {
+            margin-bottom: 0;
+            text-align: justify;
+            line-height: 1.6;
+        }
+        
+        /* Model Description Image Style - Height Controlled */
+        .model-description-image-container {
+            display: flex; 
+            justify-content: space-around; 
+            align-items: flex-start; 
+            gap: 20px; 
+            margin-bottom: 1.5em; 
+            flex-wrap: wrap; 
+        }
+        .model-description-image-container .architecture-image-wrapper {
+            text-align: center; 
+            flex-grow: 0; 
+            flex-shrink: 1; 
+        }
+        .model-description-image-container img {
+            width: auto; 
+            max-width: 100%; 
+            height: 360px; /* MODIFIED: Doubled height */
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 0.5em; 
+            display: block; 
+            margin-left: auto; 
+            margin-right: auto; 
+        }
+        .model-description-image-container p { /* Caption style */
+            font-size: 0.85em;
+            color: #444;
+            margin-top: 0;
+        }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 1.5em; 
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            table-layout: fixed;
+            min-width: 800px;
+        }
+        th, td {
+            border: 1px solid #dee2e6;
+            padding: 8px 5px;
+            text-align: center;
+            vertical-align: top;
+            word-wrap: break-word;
+            font-size: 0.8em;
+        }
+        th {
+            background-color: #e9ecef;
+            font-weight: 600;
+            color: #495057;
+            white-space: normal;
+            vertical-align: middle;
+        }
+        th:nth-child(1) { width: 8%; }
+        th:nth-child(2) { width: 15%; }
+        th:nth-child(3) { width: 15%; }
+        th:nth-child(4) { width: 15%; }
+        th:nth-child(5) { width: 15%; }
+        th:nth-child(6) { width: 15%; }
+        th:nth-child(7) { width: 17%; }
+
+        td:first-child {
+            font-weight: bold;
+            background-color: #f8f9fa;
+            font-size: 0.75em;
+            vertical-align: middle;
+        }
+        .cell-content-wrapper { 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 8px; 
+            width: 100%;
+            padding: 4px 0;
+        }
+        td.audio-cell {
+             padding: 4px;
+        }
+        audio {
+            display: none; /* Audio elements are not displayed; control is via button */
+        }
+        .play-pause-button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75em;
+            min-width: 50px;
+            transition: background-color 0.2s ease;
+            display: inline-block;
+        }
+        .play-pause-button:hover {
+            background-color: #2980b9;
+        }
+        
+        .spectrogram-img { 
+            display: block;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            background-color: #f0f0f0; /* Placeholder color */
+            cursor: zoom-in; 
+            object-fit: cover; 
+        }
+        .spectrogram-img::before { /* Fallback text if image fails */
+            content: attr(alt);
+            display: block;
+            text-align: center;
+            font-size: 0.7em;
+            color: #777;
+            padding: 2px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .spectrogram-img[src]:not([src=""]) { /* Hide placeholder color if image loads */
+            background-color: transparent;
+        }
+        .spectrogram-img[src]:not([src=""])::before { /* Hide fallback text if image loads */
+            display: none;
+        }
+
+        /* Spectrogram specific heights within table */
+        .table-container .cell-content-wrapper .spectrogram-img {
+            max-width: 90%; 
+            height: 100px; 
+        }
+        .table-container .cell-content-wrapper .spectrogram-img::before {
+            line-height: 96px; /* Vertically center alt text for this height */
+        }
+
+        /* Modal styles for zoomed spectrogram */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1000; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgba(0,0,0,0.7); 
+            align-items: center; /* For vertical centering */
+            justify-content: center; /* For horizontal centering */
+        }
+        .modal-content {
+            position: relative; 
+            background-color: #fff; 
+            padding: 20px; 
+            border-radius: 5px;
+            width: auto; 
+            max-width: 90vw; 
+            max-height: 90vh; 
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+        }
+        .modal-content img {
+             display: block; 
+             max-width: 100%; 
+             max-height: calc(90vh - 40px); /* Account for padding */
+             height: auto; /* Maintain aspect ratio */
+             border-radius: 3px; 
+        }
+        .close-modal {
+            position: absolute;
+            top: -10px; 
+            right: -10px;
+            color: #333; 
+            background-color: #fff; 
+            border-radius: 50%; 
+            width: 30px;
+            height: 30px;
+            line-height: 30px; /* Center the 'x' */
+            text-align: center;
+            font-size: 20px; 
+            font-weight: bold;
+            transition: 0.3s;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            border: 1px solid #ddd;
+        }
+        .close-modal:hover,
+        .close-modal:focus {
+            color: #000;
+            background-color: #f1f1f1; 
+            text-decoration: none;
+        }
+
+        /* Reverb Control section styles */
+        .reverb-control-section {
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            margin-bottom: 2em; 
+        }
+        
+        .reverb-spectrogram-container {
+            margin-bottom: 15px; 
+            width: 80%; 
+            max-width: 500px; 
+        }
+        #reverb-control-spectrogram { 
+            width: 100%; 
+            height: auto;  /* Make height responsive based on width */
+            max-height: 280px; /* Limit max height for larger screens */
+            object-fit: contain; /* Ensure entire image is visible */
+            max-width: 100%; /* Ensure it doesn't overflow container */
+        }
+        #reverb-control-spectrogram::before {
+            line-height: 120px; /* Adjust based on typical image height */
+        }
+        .slider-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px; 
+            margin-bottom: 20px;
+            width: 100%; 
+        }
+        .slider-container label {
+            font-size: 0.9em;
+            color: #555;
+        }
+        .slider-container input[type="range"] {
+            width: 80%;
+            max-width: 500px;
+            cursor: pointer;
+        }
+        #reverb-setting-display { 
+            font-weight: bold;
+            color: #3498db;
+            min-width: 30px; /* Ensure space for text like "0.0" */
+            display: inline-block;
+            text-align: left;
+        }
+        .reverb-audio-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px; 
+        }
+
+        /* Feature Sampling section styles */
+        .feature-sampling-section {
+             margin-bottom: 2em; 
+        }
+        .feature-sampling-figure-container {
+            display: flex; 
+            justify-content: space-around; 
+            align-items: flex-start; 
+            gap: 15px; 
+            margin-bottom: 2em;
+            flex-wrap: wrap; 
+        }
+        .feature-sampling-figure-container img {
+            max-width: 30%; 
+            height: auto;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            object-fit: contain; 
+        }
+        .feature-sampling-audio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
+            gap: 20px;
+            justify-items: center; 
+        }
+        .feature-sampling-audio-item {
+            padding: 10px;
+            width: 100%; 
+            box-sizing: border-box;
+        }
+        .feature-sampling-audio-item-label { 
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+            color: #444;
+            text-align: center;
+        }
+         .feature-sampling-audio-item .spectrogram-img {
+            max-width: 100%; 
+            height: auto; /* Let it scale with width */
+        }
+        .feature-sampling-audio-item .spectrogram-img::before {
+            line-height: 96px; 
+        }
+
+        /* Footer styles */
+        footer {
+            margin-top: 3em;
+            padding-top: 1.5em;
+            border-top: 1px solid #dee2e6;
+            text-align: center;
+            font-size: 0.85em;
+            color: #6c757d;
+        }
+
+        /* --- Media Queries --- */
+        @media (max-width: 1200px) {
+            .table-container .cell-content-wrapper .spectrogram-img { height: 80px; } 
+            .table-container .cell-content-wrapper .spectrogram-img::before { line-height: 76px; }
+            #reverb-control-spectrogram { max-height: 120px; } 
+            #reverb-control-spectrogram::before { line-height: 100px; }
+            .feature-sampling-audio-item .spectrogram-img { height: auto; }
+            .feature-sampling-audio-item .spectrogram-img::before { line-height: 76px; }
+            .feature-sampling-figure-container img { max-width: 45%; } 
+            
+            .model-description-image-container img { 
+                height: 320px; 
+            }
+        }
+
+        @media (max-width: 900px) {
+            body { padding: 15px; }
+            h1 { font-size: 1.5em; }
+            h2 { font-size: 1.2em; } 
+            .abstract { padding: 12px; }
+            .abstract h2 { font-size: 1.1em; } 
+            .description { padding: 10px; font-size: 0.88em;}
+            .table-container .cell-content-wrapper .spectrogram-img { height: 70px;} 
+            .table-container .cell-content-wrapper .spectrogram-img::before { line-height: 66px; }
+            .cell-content-wrapper { gap: 4px; }
+            .slider-container input[type="range"] { width: 90%; }
+            .reverb-spectrogram-container { width: 90%; }
+            #reverb-control-spectrogram { max-height: auto; } 
+            #reverb-control-spectrogram::before { line-height: 80px; }
+            .feature-sampling-audio-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); } 
+            .feature-sampling-audio-item .spectrogram-img { height: auto; }
+            .feature-sampling-audio-item .spectrogram-img::before { line-height: 66px; }
+            .feature-sampling-figure-container img { max-width: 48%; } 
+            
+            .model-description-image-container .architecture-image-wrapper { 
+                max-width: 90%; 
+                margin-bottom: 15px; 
+                margin-left: auto; 
+                margin-right: auto; 
+            }
+            .model-description-image-container img {
+                height: 400px; 
+            }
+        }
+
+        @media (max-width: 700px) { 
+             .feature-sampling-audio-grid { grid-template-columns: 1fr; } 
+             .feature-sampling-figure-container img { max-width: 90%; margin-bottom: 10px;} 
+        }
+
+        @media (max-width: 600px) {
+            h2 { font-size: 1.1em; } 
+            .abstract h2 { font-size: 1.0em; }
+            .table-container .cell-content-wrapper .spectrogram-img { height: 60px; } 
+            .table-container .cell-content-wrapper .spectrogram-img::before { line-height: 56px; }
+            .modal-content { padding: 15px; max-width: 95vw; }
+            .modal-content img { max-height: calc(95vh - 30px); }
+            .close-modal { font-size: 18px; width: 25px; height: 25px; line-height: 25px; top: -8px; right: -8px;}
+            #reverb-control-spectrogram { max-height: 90px; } 
+            #reverb-control-spectrogram::before { line-height: 70px; }
+            .feature-sampling-audio-item .spectrogram-img { height: auto; }
+            .feature-sampling-audio-item .spectrogram-img::before { line-height: 56px; }
+
+            .model-description-image-container .architecture-image-wrapper {
+                max-width: 95%; 
+            }
+            .model-description-image-container img {
+                height: 360px; 
+            }
+        }
+
+         @media (max-width: 480px) {
+            h2 { font-size: 1.0em; } 
+            .abstract h2 { font-size: 0.9em; }
+            .table-container .cell-content-wrapper .spectrogram-img { height: 50px; } 
+            .table-container .cell-content-wrapper .spectrogram-img::before { line-height: 46px; }
+            #reverb-control-spectrogram { max-height: 80px; } 
+            #reverb-control-spectrogram::before { line-height: 60px; }
+            .feature-sampling-audio-item .spectrogram-img { height: auto; } /* Changed from 'audio' to 'auto' */
+            .feature-sampling-audio-item .spectrogram-img::before { line-height: 46px; }
+
+            .model-description-image-container img {
+                height: 300px; 
+            }
+         }
+    </style>
+    <script>
+      // MathJax configuration for LaTeX rendering
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          macros:{
+            bm: ["\\boldsymbol{#1}", 1], // Added for \bm command
+          }
+        },
+        startup: {
+          ready: () => {
+            console.log('MathJax is ready!');
+            MathJax.startup.defaultReady();
+          }
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+
+    <h1>ReverbMiipher: Generative Speech Restoration meets Reverberation Characteristics Controllability</h1>
+
+    <div class="authors">
+        <a href="https://wataru-nakata.github.io/">Wataru Nakata</a><sup>1,2</sup>, <a href="https://sites.google.com/corp/site/yumakoizumiweb/profile-english">Yuma Koizumi</a><sup>1</sup>, <a href="https://karita.xyz/">Shigeki Karita</a><sup>1</sup>, <a href="https://www.robinscheibler.org/">Robin Scheibler</a><sup>1</sup>, Haruko Ishikawa<sup>1</sup>, <a href="https://scholar.google.fr/citations?user=DiXZ7fUAAAAJ&hl=en">Adriana Guevara-Rukoz</a><sup>3</sup>, <a href="https://research.google/people/heigazen/?&type=google">Heiga Zen</a><sup>1</sup>, <a href="https://bacchiani.net/resume/resume.html">Michiel Bacchiani</a><sup>1</sup> <br>
+        <sup>1</sup>Google DeepMind, Tokyo, Japan.
+        <sup>2</sup>The University of Tokyo, Tokyo, Japan.
+        <sup>3</sup>Google, Zurich, Switzerland.
+    </div>
+
+    <div class="abstract">
+        <h2>Abstract</h2>
+        <p>
+            Reverberation encodes spatial information regarding the acoustic source environment, yet traditional Speech Restoration (SR) usually completely removes reverberation. We propose <i>ReverbMiipher</i>, an SR model extending parametric resynthesis framework, designed to denoise speech while preserving and enabling control over reverberation. ReverbMiipher incorporates a dedicated ReverbEncoder to extract a reverb feature vector from noisy input. This feature conditions a vocoder to reconstruct the speech signal, removing noise while retaining the original reverberation characteristics. A stochastic zero-vector replacement strategy during training ensures the feature specifically encodes reverberation, disentangling it from other speech attributes. This learned representation facilitates reverberation control via techniques such as interpolation between features, replacement with features from other utterances, or sampling from a latent space. Objective and subjective evaluations confirm ReverbMiipher effectively preserves reverberation, removes other artifacts, and outperforms the conventional two-stage SR and convolving simulated room impulse response approach. We further demonstrate its ability to generate novel reverberation effects through feature manipulation.
+        </p>
+    </div>
+
+    <h2>Model Description</h2>
+    <div class="model-description-image-container">
+        <div class="architecture-image-wrapper">
+            <img src="miipher2.svg" alt="Miipher2 Model Architecture Diagram">
+            <p>Figure 1: Miipher2 Architecture</p>
+        </div>
+        <div class="architecture-image-wrapper">
+            <img src="reverb miipher.svg" alt="ReverbMiipher Model Architecture Diagram (Proposed)">
+            <p>Figure 2: ReverbMiipher Architecture (Proposed)</p>
+        </div>
+    </div>
+    <p class="section-intro-text">
+The proposed method, ReverbMiipher, is an extended model of Miipher-2 endowed with reverberation controllability as shown in Figure 2. This model incorporates an additional feature extraction module termed ReverbEncoder $\mathcal{R}$. The ReverbEncoder takes a log-mel spectrogram extracted from $\bm{x}$ and outputs a reverb-feature $\bm{c} = \mathcal{R}(\bm{x}) \in \mathbb{R}^{D}$, which is a vector embedded with reverberation characteristics. Here, $D=512$ is the dimension of reverb-feature. By utilizing $\bm{c}$ as an additional conditioning for $\mathcal{V}$, ReverbMiipher outputs a signal in which only reverberation is preserved and all other artifacts are removed as $\mathcal{V}(\hat{\bm{h}}_{s}, \bm{c})$. Furthermore, applying control to $\bm{c}$ enables the manipulation of reverberation.
+    </p>
+
+    <div class="description">
+        <p>
+            This page presents audio samples for our paper.
+            Spectrograms for each audio can be clicked to zoom.
+        </p>
+    </div>
+
+    <h2>Reverb preserving speech restoration</h2>
+    <p class="section-intro-text">This section demonstrates the model's ability to remove noise while preserving the original reverberation characteristics of the speech signal. Compare the "Ground truth reverb" with the "ReverbMiipher (Proposed)" output.</p>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Sample Index</th>
+                    <th>Clean</th>
+                    <th>Noisy</th>
+                    <th>Ground Truth Reverb</th>
+                    <th>Miipher-2</th>
+                    <th>Miipher-RIR</th>
+                    <th>ReverbMiipher (Proposed)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>S0</td>
+                    <td class="audio-cell">
+                        <div class="cell-content-wrapper">
+                            <img src="wavs/clean/0.png" alt="Clean Spectrogram 0" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';">
+                            <audio id="audio-clean-0" src="wavs/clean/0.wav" preload="metadata"></audio>
+                            <button id="button-clean-0" class="play-pause-button" onclick="toggleTablePlayPause('audio-clean-0', this)">Play</button>
+                        </div>
+                    </td>
+                    <td class="audio-cell">
+                        <div class="cell-content-wrapper">
+                            <img src="wavs/noisy/0.png" alt="Noisy Spectrogram 0" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';">
+                            <audio id="audio-noisy-0" src="wavs/noisy/0.wav" preload="metadata"></audio>
+                            <button id="button-noisy-0" class="play-pause-button" onclick="toggleTablePlayPause('audio-noisy-0', this)">Play</button>
+                        </div>
+                    </td>
+                    <td class="audio-cell">
+                        <div class="cell-content-wrapper">
+                            <img src="wavs/reverb/0.png" alt="GT Reverb Spectrogram 0" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';">
+                            <audio id="audio-reverb-0" src="wavs/reverb/0.wav" preload="metadata"></audio>
+                            <button id="button-reverb-0" class="play-pause-button" onclick="toggleTablePlayPause('audio-reverb-0', this)">Play</button>
+                        </div>
+                    </td>
+                    <td class="audio-cell">
+                        <div class="cell-content-wrapper">
+                            <img src="wavs/miipher/0.png" alt="Miipher Spectrogram 0" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';">
+                            <audio id="audio-miipher-0" src="wavs/miipher/0.wav" preload="metadata"></audio>
+                            <button id="button-miipher-0" class="play-pause-button" onclick="toggleTablePlayPause('audio-miipher-0', this)">Play</button>
+                        </div>
+                    </td>
+                    <td class="audio-cell">
+                        <div class="cell-content-wrapper">
+                            <img src="wavs/miipher_rir/0.png" alt="Miipher-RIR Spectrogram 0" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';">
+                            <audio id="audio-miipher_rir-0" src="wavs/miipher_rir/0.wav" preload="metadata"></audio>
+                            <button id="button-miipher_rir-0" class="play-pause-button" onclick="toggleTablePlayPause('audio-miipher_rir-0', this)">Play</button>
+                        </div>
+                    </td>
+                    <td class="audio-cell">
+                        <div class="cell-content-wrapper">
+                            <img src="wavs/reverb_miipher/0.png" alt="ReverbMiipher Spectrogram 0" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';">
+                            <audio id="audio-reverb_miipher-0" src="wavs/reverb_miipher/0.wav" preload="metadata"></audio>
+                            <button id="button-reverb_miipher-0" class="play-pause-button" onclick="toggleTablePlayPause('audio-reverb_miipher-0', this)">Play</button>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>S1</td>
+                    <td class="audio-cell">
+                        <div class="cell-content-wrapper">
+                            <img src="wavs/clean/1.png" alt="Clean Spec. 1" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';">
+                            <audio id="audio-clean-1" src="wavs/clean/1.wav" preload="metadata"></audio>
+                            <button id="button-clean-1" class="play-pause-button" onclick="toggleTablePlayPause('audio-clean-1', this)">Play</button>
+                        </div>
+                    </td>
+                    <td class="audio-cell">
+                        <div class="cell-content-wrapper">
+                            <img src="wavs/noisy/1.png" alt="Noisy Spec. 1" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';">
+                            <audio id="audio-noisy-1" src="wavs/noisy/1.wav" preload="metadata"></audio>
+                            <button id="button-noisy-1" class="play-pause-button" onclick="toggleTablePlayPause('audio-noisy-1', this)">Play</button>
+                        </div>
+                    </td>
+                    <td class="audio-cell">
+                        <div class="cell-content-wrapper">
+                            <img src="wavs/reverb/1.png" alt="GT Reverb Spec. 1" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';">
+                            <audio id="audio-reverb-1" src="wavs/reverb/1.wav" preload="metadata"></audio>
+                            <button id="button-reverb-1" class="play-pause-button" onclick="toggleTablePlayPause('audio-reverb-1', this)">Play</button>
+                        </div>
+                    </td>
+                    <td class="audio-cell">
+                        <div class="cell-content-wrapper">
+                            <img src="wavs/miipher/1.png" alt="Miipher Spec. 1" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';">
+                            <audio id="audio-miipher-1" src="wavs/miipher/1.wav" preload="metadata"></audio>
+                            <button id="button-miipher-1" class="play-pause-button" onclick="toggleTablePlayPause('audio-miipher-1', this)">Play</button>
+                        </div>
+                    </td>
+                    <td class="audio-cell">
+                        <div class="cell-content-wrapper">
+                            <img src="wavs/miipher_rir/1.png" alt="Miipher-RIR Spec. 1" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';">
+                            <audio id="audio-miipher_rir-1" src="wavs/miipher_rir/1.wav" preload="metadata"></audio>
+                            <button id="button-miipher_rir-1" class="play-pause-button" onclick="toggleTablePlayPause('audio-miipher_rir-1', this)">Play</button>
+                        </div>
+                    </td>
+                    <td class="audio-cell">
+                        <div class="cell-content-wrapper">
+                            <img src="wavs/reverb_miipher/1.png" alt="ReverbMiipher Spec. 1" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';">
+                            <audio id="audio-reverb_miipher-1" src="wavs/reverb_miipher/1.wav" preload="metadata"></audio>
+                            <button id="button-reverb_miipher-1" class="play-pause-button" onclick="toggleTablePlayPause('audio-reverb_miipher-1', this)">Play</button>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>S2</td>
+                    <td class="audio-cell">
+                        <div class="cell-content-wrapper">
+                            <img src="wavs/clean/2.png" alt="Clean Spec. 2" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';">
+                            <audio id="audio-clean-2" src="wavs/clean/2.wav" preload="metadata"></audio>
+                            <button id="button-clean-2" class="play-pause-button" onclick="toggleTablePlayPause('audio-clean-2', this)">Play</button>
+                        </div>
+                    </td>
+                    <td class="audio-cell">
+                        <div class="cell-content-wrapper">
+                            <img src="wavs/noisy/2.png" alt="Noisy Spec. 2" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';">
+                            <audio id="audio-noisy-2" src="wavs/noisy/2.wav" preload="metadata"></audio>
+                            <button id="button-noisy-2" class="play-pause-button" onclick="toggleTablePlayPause('audio-noisy-2', this)">Play</button>
+                        </div>
+                    </td>
+                    <td class="audio-cell">
+                        <div class="cell-content-wrapper">
+                            <img src="wavs/reverb/2.png" alt="GT Reverb Spec. 2" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';">
+                            <audio id="audio-reverb-2" src="wavs/reverb/2.wav" preload="metadata"></audio>
+                            <button id="button-reverb-2" class="play-pause-button" onclick="toggleTablePlayPause('audio-reverb-2', this)">Play</button>
+                        </div>
+                    </td>
+                    <td class="audio-cell">
+                        <div class="cell-content-wrapper">
+                            <img src="wavs/miipher/2.png" alt="Miipher Spec. 2" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';">
+                            <audio id="audio-miipher-2" src="wavs/miipher/2.wav" preload="metadata"></audio>
+                            <button id="button-miipher-2" class="play-pause-button" onclick="toggleTablePlayPause('audio-miipher-2', this)">Play</button>
+                        </div>
+                    </td>
+                    <td class="audio-cell">
+                        <div class="cell-content-wrapper">
+                            <img src="wavs/miipher_rir/2.png" alt="Miipher-RIR Spec. 2" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';">
+                            <audio id="audio-miipher_rir-2" src="wavs/miipher_rir/2.wav" preload="metadata"></audio>
+                            <button id="button-miipher_rir-2" class="play-pause-button" onclick="toggleTablePlayPause('audio-miipher_rir-2', this)">Play</button>
+                        </div>
+                    </td>
+                    <td class="audio-cell">
+                        <div class="cell-content-wrapper">
+                            <img src="wavs/reverb_miipher/2.png" alt="ReverbMiipher Spec. 2" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';">
+                            <audio id="audio-reverb_miipher-2" src="wavs/reverb_miipher/2.wav" preload="metadata"></audio>
+                            <button id="button-reverb_miipher-2" class="play-pause-button" onclick="toggleTablePlayPause('audio-reverb_miipher-2', this)">Play</button>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>S3</td>
+                    <td class="audio-cell">
+                        <div class="cell-content-wrapper">
+                            <img src="wavs/clean/3.png" alt="Clean Spec. 3" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';">
+                            <audio id="audio-clean-3" src="wavs/clean/3.wav" preload="metadata"></audio>
+                            <button id="button-clean-3" class="play-pause-button" onclick="toggleTablePlayPause('audio-clean-3', this)">Play</button>
+                        </div>
+                    </td>
+                    <td class="audio-cell">
+                        <div class="cell-content-wrapper">
+                            <img src="wavs/noisy/3.png" alt="Noisy Spec. 3" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';">
+                            <audio id="audio-noisy-3" src="wavs/noisy/3.wav" preload="metadata"></audio>
+                            <button id="button-noisy-3" class="play-pause-button" onclick="toggleTablePlayPause('audio-noisy-3', this)">Play</button>
+                        </div>
+                    </td>
+                    <td class="audio-cell">
+                        <div class="cell-content-wrapper">
+                            <img src="wavs/reverb/3.png" alt="GT Reverb Spec. 3" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';">
+                            <audio id="audio-reverb-3" src="wavs/reverb/3.wav" preload="metadata"></audio>
+                            <button id="button-reverb-3" class="play-pause-button" onclick="toggleTablePlayPause('audio-reverb-3', this)">Play</button>
+                        </div>
+                    </td>
+                    <td class="audio-cell">
+                        <div class="cell-content-wrapper">
+                            <img src="wavs/miipher/3.png" alt="Miipher Spec. 3" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';">
+                            <audio id="audio-miipher-3" src="wavs/miipher/3.wav" preload="metadata"></audio>
+                            <button id="button-miipher-3" class="play-pause-button" onclick="toggleTablePlayPause('audio-miipher-3', this)">Play</button>
+                        </div>
+                    </td>
+                    <td class="audio-cell">
+                        <div class="cell-content-wrapper">
+                            <img src="wavs/miipher_rir/3.png" alt="Miipher-RIR Spec. 3" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';">
+                            <audio id="audio-miipher_rir-3" src="wavs/miipher_rir/3.wav" preload="metadata"></audio>
+                            <button id="button-miipher_rir-3" class="play-pause-button" onclick="toggleTablePlayPause('audio-miipher_rir-3', this)">Play</button>
+                        </div>
+                    </td>
+                    <td class="audio-cell">
+                        <div class="cell-content-wrapper">
+                            <img src="wavs/reverb_miipher/3.png" alt="ReverbMiipher Spec. 3" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';">
+                            <audio id="audio-reverb_miipher-3" src="wavs/reverb_miipher/3.wav" preload="metadata"></audio>
+                            <button id="button-reverb_miipher-3" class="play-pause-button" onclick="toggleTablePlayPause('audio-reverb_miipher-3', this)">Play</button>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>S4</td>
+                    <td class="audio-cell">
+                        <div class="cell-content-wrapper">
+                            <img src="wavs/clean/7.png" alt="Clean Spec. 4" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';">
+                            <audio id="audio-clean-4" src="wavs/clean/7.wav" preload="metadata"></audio>
+                            <button id="button-clean-4" class="play-pause-button" onclick="toggleTablePlayPause('audio-clean-4', this)">Play</button>
+                        </div>
+                    </td>
+                    <td class="audio-cell">
+                        <div class="cell-content-wrapper">
+                            <img src="wavs/noisy/7.png" alt="Noisy Spec. 4" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';">
+                            <audio id="audio-noisy-4" src="wavs/noisy/7.wav" preload="metadata"></audio>
+                            <button id="button-noisy-4" class="play-pause-button" onclick="toggleTablePlayPause('audio-noisy-4', this)">Play</button>
+                        </div>
+                    </td>
+                    <td class="audio-cell">
+                        <div class="cell-content-wrapper">
+                            <img src="wavs/reverb/7.png" alt="GT Reverb Spec. 4" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';">
+                            <audio id="audio-reverb-4" src="wavs/reverb/7.wav" preload="metadata"></audio>
+                            <button id="button-reverb-4" class="play-pause-button" onclick="toggleTablePlayPause('audio-reverb-4', this)">Play</button>
+                        </div>
+                    </td>
+                    <td class="audio-cell">
+                        <div class="cell-content-wrapper">
+                            <img src="wavs/miipher/7.png" alt="Miipher Spec. 4" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';">
+                            <audio id="audio-miipher-4" src="wavs/miipher/7.wav" preload="metadata"></audio>
+                            <button id="button-miipher-4" class="play-pause-button" onclick="toggleTablePlayPause('audio-miipher-4', this)">Play</button>
+                        </div>
+                    </td>
+                    <td class="audio-cell">
+                        <div class="cell-content-wrapper">
+                            <img src="wavs/miipher_rir/7.png" alt="Miipher-RIR Spec. 4" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';">
+                            <audio id="audio-miipher_rir-4" src="wavs/miipher_rir/7.wav" preload="metadata"></audio>
+                            <button id="button-miipher_rir-4" class="play-pause-button" onclick="toggleTablePlayPause('audio-miipher_rir-4', this)">Play</button>
+                        </div>
+                    </td>
+                    <td class="audio-cell">
+                        <div class="cell-content-wrapper">
+                            <img src="wavs/reverb_miipher/7.png" alt="ReverbMiipher Spec. 4" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';">
+                            <audio id="audio-reverb_miipher-4" src="wavs/reverb_miipher/7.wav" preload="metadata"></audio>
+                            <button id="button-reverb_miipher-4" class="play-pause-button" onclick="toggleTablePlayPause('audio-reverb_miipher-4', this)">Play</button>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>S5</td>
+                    <td class="audio-cell">
+                        <div class="cell-content-wrapper">
+                            <img src="wavs/added_samples/clean.png" alt="Clean Spectrogram Added Sample" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';">
+                            <audio id="audio-clean-added" src="wavs/added_samples/clean.wav" preload="metadata"></audio>
+                            <button id="button-clean-added" class="play-pause-button" onclick="toggleTablePlayPause('audio-clean-added', this)">Play</button>
+                        </div>
+                    </td>
+                    <td class="audio-cell">
+                        <div class="cell-content-wrapper">
+                            <img src="wavs/added_samples/noisy.png" alt="Noisy Spectrogram Added Sample" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';">
+                            <audio id="audio-noisy-added" src="wavs/added_samples/noisy.wav" preload="metadata"></audio>
+                            <button id="button-noisy-added" class="play-pause-button" onclick="toggleTablePlayPause('audio-noisy-added', this)">Play</button>
+                        </div>
+                    </td>
+                    <td class="audio-cell">
+                        <div class="cell-content-wrapper">
+                            <img src="wavs/added_samples/reverb.png" alt="GT Reverb Spectrogram Added Sample" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';">
+                            <audio id="audio-reverb-added" src="wavs/added_samples/reverb.wav" preload="metadata"></audio>
+                            <button id="button-reverb-added" class="play-pause-button" onclick="toggleTablePlayPause('audio-reverb-added', this)">Play</button>
+                        </div>
+                    </td>
+                    <td class="audio-cell">
+                        <div class="cell-content-wrapper">
+                            <img src="wavs/added_samples/miipher.png" alt="Miipher Spectrogram Added Sample" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';">
+                            <audio id="audio-miipher-added" src="wavs/added_samples/miipher.wav" preload="metadata"></audio>
+                            <button id="button-miipher-added" class="play-pause-button" onclick="toggleTablePlayPause('audio-miipher-added', this)">Play</button>
+                        </div>
+                    </td>
+                    <td class="audio-cell">
+                        <div class="cell-content-wrapper">
+                            <img src="wavs/added_samples/miipher_rir.png" alt="Miipher-RIR Spectrogram Added Sample" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';">
+                            <audio id="audio-miipher_rir-added" src="wavs/added_samples/miipher_rir.wav" preload="metadata"></audio>
+                            <button id="button-miipher_rir-added" class="play-pause-button" onclick="toggleTablePlayPause('audio-miipher_rir-added', this)">Play</button>
+                        </div>
+                    </td>
+                    <td class="audio-cell">
+                        <div class="cell-content-wrapper">
+                            <img src="wavs/added_samples/reverb_miipher.png" alt="ReverbMiipher Spectrogram Added Sample" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';">
+                            <audio id="audio-reverb_miipher-added" src="wavs/added_samples/reverb_miipher.wav" preload="metadata"></audio>
+                            <button id="button-reverb_miipher-added" class="play-pause-button" onclick="toggleTablePlayPause('audio-reverb_miipher-added', this)">Play</button>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+        </table>
+    </div>
+
+    <div class="reverb-control-section">
+        <h2>Reverb feature interpolation</h2>
+        <p class="section-intro-text">Use the slider to adjust the &alpha; for the linear interpolation. The spectrogram and audio will update dynamically. An &alpha; of 1.0 corresponds to the reverberant speech, while 0.0 is for a drier signal.</p>
+        <p class="section-intro-text">The linear interpolation can be expressed as $
+    \bm{c}(\alpha) = (1-\alpha) \bm{c}_1 + \alpha \bm{c}_2,\text{for } 0 \leq \alpha \leq 1
+$.</p>
+			<p class="section-intro-text">In this example, $c_1$ corresponds to the reverb feature extracted from dry signal while $c_0$ corresponds to the reverberant signal</p>
+        <div class="reverb-spectrogram-container">
+            <img src="wavs/reverb_control/spec_0.png" alt="Reverb Control Spectrogram, α=1.0" id="reverb-control-spectrogram" class="spectrogram-img" onerror="this.style.backgroundColor='#e0e0e0'; this.alt='Spectrogram N/A';">
+        </div>
+        <div class="slider-container">
+            <label for="reverb-slider">&alpha;= <span id="reverb-setting-display">1.0</span></label>
+            <input type="range" id="reverb-slider" min="0" max="10" value="0" step="1"> 
+             <audio id="reverb-control-audio" preload="metadata"></audio>
+            <div class="reverb-audio-controls">
+                <button id="reverb-play-pause-button" class="play-pause-button">Play</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="feature-sampling-section">
+        <h2>Reverb Feature Sampling</h2>
+        <p class="section-intro-text">This section showcases results from sampling different reverb features from 2D plane acquired in PCA. The visualization of reverb feature with respect to RT60 and DRR are shown below. We have picked 3 samples each having different reverberation characteristics.</p>
+        <div class="feature-sampling-figure-container">
+            <img src="rt60.png" alt="Sampled Feature Visualization 1">
+            <img src="drr.png" alt="Sampled Feature Visualization 2">
+        </div>
+        <div class="feature-sampling-audio-grid">
+            <div class="feature-sampling-audio-item">
+                <p class="feature-sampling-audio-item-label">Sample A</p>
+                <div class="cell-content-wrapper">
+                    <img src="wavs/sampled_wav/A.png" alt="Sampled Reverb A Spectrogram" class="spectrogram-img" onerror="this.style.backgroundColor='#e0e0e0'; this.alt='Spectrogram N/A';">
+                    <audio id="audio-feature-sample-A" src="wavs/sampled_wav/A.wav" preload="metadata"></audio>
+                    <button id="button-feature-sample-A" class="play-pause-button" onclick="toggleTablePlayPause('audio-feature-sample-A', this)">Play</button>
+                </div>
+            </div>
+            <div class="feature-sampling-audio-item">
+                <p class="feature-sampling-audio-item-label">Sample B</p>
+                <div class="cell-content-wrapper">
+                    <img src="wavs/sampled_wav/B.png" alt="Sampled Reverb B Spectrogram" class="spectrogram-img" onerror="this.style.backgroundColor='#e0e0e0'; this.alt='Spectrogram N/A';">
+                    <audio id="audio-feature-sample-B" src="wavs/sampled_wav/B.wav" preload="metadata"></audio>
+                    <button id="button-feature-sample-B" class="play-pause-button" onclick="toggleTablePlayPause('audio-feature-sample-B', this)">Play</button>
+                </div>
+            </div>
+            <div class="feature-sampling-audio-item">
+                <p class="feature-sampling-audio-item-label">Sample C</p>
+                <div class="cell-content-wrapper">
+                    <img src="wavs/sampled_wav/C.png" alt="Sampled Reverb C Spectrogram" class="spectrogram-img" onerror="this.style.backgroundColor='#e0e0e0'; this.alt='Spectrogram N/A';">
+                    <audio id="audio-feature-sample-C" src="wavs/sampled_wav/C.wav" preload="metadata"></audio>
+                    <button id="button-feature-sample-C" class="play-pause-button" onclick="toggleTablePlayPause('audio-feature-sample-C', this)">Play</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="spectrogramModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <img id="zoomedSpectrogram" src="" alt="Zoomed Spectrogram">
+        </div>
+    </div>
+
+    <footer>
+        <p>Audio samples generated for "ReverbMiipher".</p>
+        <p>Page generated on May 2, 2025.</p> </footer>
+
+    <script>
+        let allAudioElements = []; // To keep track of all audio elements for pausing others
+
+        /**
+         * Pauses all other audio elements except the current one.
+         * @param {HTMLAudioElement} currentAudioEl - The audio element that should not be paused.
+         */
+        function pauseAllOtherAudio(currentAudioEl) {
+            allAudioElements.forEach(audioEl => {
+                if (audioEl !== currentAudioEl && !audioEl.paused) {
+                    audioEl.pause();
+                    // Update the corresponding play/pause button text
+                    let buttonId = audioEl.id.replace('audio-', 'button-');
+                    if (audioEl.id === 'reverb-control-audio') {
+                        buttonId = 'reverb-play-pause-button';
+                    } else if (audioEl.id.startsWith('audio-feature-sample-')) {
+                         buttonId = audioEl.id.replace('audio-feature-sample-', 'button-feature-sample-');
+                    }
+                    const button = document.getElementById(buttonId);
+                    if (button) {
+                        button.textContent = 'Play';
+                    }
+                }
+            });
+        }
+
+        /**
+         * Toggles play/pause for a specific audio element in the table.
+         * @param {string} audioId - The ID of the audio element.
+         * @param {HTMLButtonElement} buttonElement - The button that was clicked.
+         */
+        function toggleTablePlayPause(audioId, buttonElement) { 
+            const audio = document.getElementById(audioId);
+            if (!audio) {
+                console.error('Audio element not found:', audioId);
+                return;
+            }
+            pauseAllOtherAudio(audio); // Pause other audio elements first
+
+            if (audio.paused || audio.ended) {
+                audio.play().catch(error => console.error("Error playing audio:", audioId, error));
+                buttonElement.textContent = 'Pause';
+            } else {
+                audio.pause();
+                buttonElement.textContent = 'Play';
+            }
+        }
+
+        /**
+         * Handles the 'ended' event for audio elements to reset button text.
+         */
+        function handleAudioEndGeneral() {
+            let buttonId;
+            // Determine button ID based on audio element ID
+            if (this.id === 'reverb-control-audio') {
+                buttonId = 'reverb-play-pause-button';
+            } else if (this.id.startsWith('audio-feature-sample-')) {
+                buttonId = this.id.replace('audio-feature-sample-', 'button-feature-sample-');
+            }
+            else { // For table audio elements
+                buttonId = this.id.replace('audio-', 'button-');
+            }
+            const buttonElement = document.getElementById(buttonId);
+            if (buttonElement) {
+                buttonElement.textContent = 'Play';
+            }
+        }
+
+        // Modal elements
+        const modal = document.getElementById("spectrogramModal");
+        const modalImg = document.getElementById("zoomedSpectrogram");
+        let closeModalSpan; // Will be assigned in DOMContentLoaded
+
+        /**
+         * Opens the modal to display a zoomed version of the clicked spectrogram.
+         * @param {Event} event - The click event.
+         */
+        function openSpectrogramModal(event) {
+            if (event.target.classList.contains("spectrogram-img")) {
+                const imgSrc = event.target.getAttribute("src");
+                // Check if the image source is valid and the image has loaded
+                if (imgSrc && event.target.naturalWidth > 0) { 
+                    modal.style.display = "flex"; // Use flex for centering
+                    modalImg.src = imgSrc;
+                    modalImg.alt = event.target.alt; 
+                } else {
+                    console.log("Cannot zoom into a placeholder or broken image.");
+                }
+            }
+        }
+
+        /**
+         * Closes the spectrogram modal.
+         */
+        function closeModal() {
+            if (modal) {
+                modal.style.display = "none";
+                modalImg.src = ""; // Clear image source
+                modalImg.alt = ""; // Clear alt text
+            }
+        }
+
+        // Reverb control elements
+        const reverbSlider = document.getElementById('reverb-slider');
+        const reverbAudio = document.getElementById('reverb-control-audio');
+        const reverbPlayPauseButton = document.getElementById('reverb-play-pause-button');
+        const reverbSettingDisplay = document.getElementById('reverb-setting-display');
+        const reverbSpectrogram = document.getElementById('reverb-control-spectrogram');
+
+        // File paths for reverb control audio and spectrograms
+        const reverbAudioFiles = [
+            "wavs/reverb_control/sample_0.wav", "wavs/reverb_control/sample_1.wav",
+            "wavs/reverb_control/sample_2.wav", "wavs/reverb_control/sample_3.wav",
+            "wavs/reverb_control/sample_4.wav", "wavs/reverb_control/sample_5.wav",
+            "wavs/reverb_control/sample_6.wav", "wavs/reverb_control/sample_7.wav",
+            "wavs/reverb_control/sample_8.wav", "wavs/reverb_control/sample_9.wav",
+            "wavs/reverb_control/sample_10.wav" 
+        ];
+        const reverbSpectrogramFiles = [
+            "wavs/reverb_control/spec_0.png", "wavs/reverb_control/spec_1.png",
+            "wavs/reverb_control/spec_2.png", "wavs/reverb_control/spec_3.png",
+            "wavs/reverb_control/spec_4.png", "wavs/reverb_control/spec_5.png",
+            "wavs/reverb_control/spec_6.png", "wavs/reverb_control/spec_7.png",
+            "wavs/reverb_control/spec_8.png", "wavs/reverb_control/spec_9.png",
+            "wavs/reverb_control/spec_10.png" 
+        ];
+
+        /**
+         * Updates the reverb control audio and spectrogram based on the slider value.
+         * @param {number} sliderValue - The current value of the reverb slider.
+         */
+        function updateReverbAudioAndSpectrogram(sliderValue) {
+            const wasPlaying = reverbAudio && !reverbAudio.paused;
+            const currentTime = reverbAudio ? reverbAudio.currentTime : 0;
+            const alphaValue = ((10 - sliderValue) / 10).toFixed(1); // Alpha calculation
+
+            if (reverbSettingDisplay) { 
+                reverbSettingDisplay.textContent = alphaValue;
+            }
+            
+            const fileIndex = sliderValue; // Slider value directly maps to index
+
+            if (reverbAudio) {
+                reverbAudio.src = reverbAudioFiles[fileIndex];
+                reverbAudio.load(); 
+            }
+
+            if (reverbSpectrogram) {
+                reverbSpectrogram.src = reverbSpectrogramFiles[fileIndex];
+                reverbSpectrogram.alt = `Reverb Control Spectrogram, α=${alphaValue}`;
+                // Reset background color in case it was showing a placeholder
+                reverbSpectrogram.style.backgroundColor = '#f0f0f0'; 
+            }
+
+            if (reverbAudio) {
+                // Handle playback continuation
+                reverbAudio.oncanplaythrough = () => { 
+                    reverbAudio.currentTime = currentTime;
+                    if (wasPlaying) {
+                        reverbAudio.play().catch(e => console.error("Error playing reverb audio:", e));
+                        if(reverbPlayPauseButton) reverbPlayPauseButton.textContent = 'Pause';
+                    } else {
+                        if(reverbPlayPauseButton) reverbPlayPauseButton.textContent = 'Play';
+                    }
+                    reverbAudio.oncanplaythrough = null; // Remove listener after use
+                };
+                reverbAudio.onerror = () => {
+                    console.error("Error loading reverb audio:", reverbAudio.src);
+                    if(reverbPlayPauseButton) reverbPlayPauseButton.textContent = 'Play'; 
+                    reverbAudio.oncanplaythrough = null; 
+                };
+            }
+        }
+
+        // Event listener for when the DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            // Collect all audio elements on the page
+            allAudioElements = Array.from(document.querySelectorAll('audio'));
+
+            // Initialize modal state
+            if (modal) modal.style.display = "none";
+            if (modalImg) {
+                modalImg.src = "";
+                modalImg.alt = "";
+            }
+            
+            closeModalSpan = document.querySelector(".modal-content .close-modal");
+
+            // Add 'ended' event listeners to all audio elements
+            allAudioElements.forEach(audio => {
+                audio.addEventListener('ended', handleAudioEndGeneral);
+                // Set initial button text and click handlers if not already set by HTML onclick
+                let buttonId;
+                 if (audio.id === 'reverb-control-audio') {
+                    buttonId = 'reverb-play-pause-button';
+                } else if (audio.id.startsWith('audio-feature-sample-')) {
+                    buttonId = audio.id.replace('audio-feature-sample-', 'button-feature-sample-');
+                } else { // For table audio elements
+                    buttonId = audio.id.replace('audio-', 'button-');
+                }
+                const buttonElement = document.getElementById(buttonId);
+                if (buttonElement) {
+                    buttonElement.textContent = audio.paused ? 'Play' : 'Pause';
+                    // Add click listener if not already present (e.g., for dynamically added buttons or those not using inline onclick)
+                    if (!buttonElement.getAttribute('onclick')) {
+                         buttonElement.onclick = function() { toggleTablePlayPause(audio.id, this); };
+                    }
+                }
+            });
+
+
+            // Initialize reverb control section if elements exist
+            if (reverbAudio && reverbSpectrogram && reverbSettingDisplay && reverbSlider) {
+                const initialSliderValue = parseInt(reverbSlider.value, 10);
+                reverbSettingDisplay.textContent = ((10 - initialSliderValue) / 10).toFixed(1); 
+                const initialFileIndex = initialSliderValue;
+                reverbAudio.src = reverbAudioFiles[initialFileIndex]; 
+                reverbSpectrogram.src = reverbSpectrogramFiles[initialFileIndex];
+                reverbSpectrogram.alt = `Reverb Control Spectrogram, α=${((10 - initialSliderValue)/10).toFixed(1)}`;
+            }
+
+            // Add input event listener to the reverb slider
+            if (reverbSlider) {
+                reverbSlider.addEventListener('input', () => {
+                    const sliderValue = parseInt(reverbSlider.value, 10);
+                    if (reverbAudio) pauseAllOtherAudio(reverbAudio); // Pause others when slider changes
+                    updateReverbAudioAndSpectrogram(sliderValue);
+                });
+            }
+
+            // Add click event listener to the reverb play/pause button
+            if (reverbPlayPauseButton && reverbAudio) { 
+                 reverbPlayPauseButton.onclick = function() { 
+                    // If audio source is not set, load it first based on slider
+                    if (!reverbAudio.currentSrc || reverbAudio.currentSrc === "" || reverbAudio.currentSrc.endsWith('/')) { // Check if src is effectively empty
+                        const initialSliderValue = reverbSlider ? parseInt(reverbSlider.value, 10) : 0;
+                        updateReverbAudioAndSpectrogram(initialSliderValue); 
+                        // Play after it's ready
+                        reverbAudio.oncanplaythrough = () => { 
+                            reverbAudio.currentTime = 0; 
+                            pauseAllOtherAudio(reverbAudio);
+                            reverbAudio.play().catch(e => console.error("Error playing reverb audio on first click:", e));
+                            reverbPlayPauseButton.textContent = 'Pause';
+                            reverbAudio.oncanplaythrough = null; 
+                        }
+                    } else if (reverbAudio.paused || reverbAudio.ended) {
+                        pauseAllOtherAudio(reverbAudio);
+                        reverbAudio.play().catch(e => console.error("Error playing reverb audio:", e));
+                        reverbPlayPauseButton.textContent = 'Pause';
+                    } else {
+                        reverbAudio.pause();
+                        reverbPlayPauseButton.textContent = 'Play';
+                    }
+                };
+            }
+            
+            // Add click event listeners to all spectrogram images for modal zoom
+            const allSpectrogramImages = document.querySelectorAll(".spectrogram-img");
+            allSpectrogramImages.forEach(img => { 
+                img.addEventListener("click", openSpectrogramModal);
+            });
+
+            // Add click event listener to the modal close button
+            if (closeModalSpan) closeModalSpan.onclick = closeModal;
+            
+            // Close modal if user clicks outside the modal content
+            window.onclick = function(event) {
+                if (event.target == modal) closeModal();
+            };
+            // Close modal with Escape key
+            document.addEventListener('keydown', function(event) {
+                if (modal && modal.style.display === "flex" && event.key === "Escape") closeModal();
+            });
+        });
+    </script>
+
+</body>
+</html>

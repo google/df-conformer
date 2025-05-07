@@ -1,0 +1,1487 @@
+
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   Miipher-2: A Universal Speech Restoration Model for Million-Hour Scale Data Restoration
+  </title>
+  <style>
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            line-height: 1.6;
+            margin: 0 auto;
+            padding: 20px;
+            max-width: 1600px;
+            color: #333;
+        }
+        /* --- HEADING STYLES --- */
+        h1 { /* Main page title */
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 8px;
+            text-align: center;
+            font-size: 1.7em;
+            margin-bottom: 0.5em;
+        }
+        /* Consistent styling for all main section headers (h2) */
+        h2 {
+            color: #2c3e50;
+            border-bottom: 1px solid #3498db;
+            padding-bottom: 8px;
+            text-align: left;
+            margin-top: 2.5em;
+            margin-bottom: 0.75em;
+            font-size: 1.3em;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .section-intro-text { /* Style for descriptions under section headers */
+            font-size: 0.9em;
+            color: #555;
+            margin-top: 0;
+            margin-bottom: 1.5em;
+            padding-left: 5px;
+            text-align: justify;
+        }
+
+        .description { /* Original description box style */
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 12px;
+            margin-bottom: 2em;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+        .authors {
+            text-align: center;
+            font-style: italic;
+            margin-bottom: 2em;
+            color: #555;
+            font-size: 1.0em;
+        }
+        .abstract {
+            background-color: #eaf2f8;
+            border-left: 5px solid #2980b9;
+            padding: 15px;
+            margin-top: 1em;
+            margin-bottom: 1em; /* Reduced margin-bottom */
+            border-radius: 5px;
+        }
+        .abstract h2 {
+            margin-top: 0;
+            margin-bottom: 0.6em;
+            padding-bottom: 5px;
+            font-size: 1.2em;
+            border-bottom: 1px solid #bdc3c7;
+        }
+        .abstract p {
+            margin-bottom: 0;
+            text-align: justify;
+            line-height: 1.6;
+        }
+
+        /* Model Description Image Style - Copied and adapted from index.html */
+        .model-description-image-container {
+            display: flex;
+            justify-content: center; /* Center the single image */
+            align-items: flex-start;
+            gap: 20px;
+            margin-top: 1.5em; /* Added margin-top */
+            margin-bottom: 1.5em;
+            flex-wrap: wrap;
+        }
+        .model-description-image-container .architecture-image-wrapper {
+            text-align: center;
+            flex-grow: 1;
+            flex-shrink: 1;
+            max-width: 700px; /* Max width for the image wrapper */
+        }
+        .model-description-image-container img {
+            width: 100%; /* Make image responsive within its wrapper */
+            max-width: 100%;
+            height: auto; /* Maintain aspect ratio */
+            margin-bottom: 0.5em;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .model-description-image-container p { /* Caption style */
+            font-size: 0.85em;
+            color: #444;
+            margin-top: 0;
+        }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 1.5em;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            table-layout: fixed;
+            min-width: 600px; /* Adjusted min-width as columns are reduced */
+            margin-bottom: 2em;
+        }
+        th, td {
+            border: 1px solid #dee2e6;
+            padding: 8px 5px;
+            text-align: center;
+            vertical-align: top;
+            word-wrap: break-word;
+            font-size: 0.8em;
+        }
+        th {
+            background-color: #e9ecef;
+            font-weight: 600;
+            color: #495057;
+            white-space: normal;
+            vertical-align: middle;
+        }
+        /* Define column widths for karita.html tables (ADJUSTED) */
+        #libritts table th:nth-child(1) { width: 25%; }
+        #libritts table th:nth-child(2) { width: 25%; }
+        #libritts table th:nth-child(3) { width: 25%; }
+        #libritts table th:nth-child(4) { width: 25%; }
+
+        #mls table th:nth-child(1) { width: 50%; }
+        #mls table th:nth-child(2) { width: 50%; }
+
+        #fleurs table th:nth-child(1) { width: 50%; }
+        #fleurs table th:nth-child(2) { width: 50%; }
+
+        /* Removed specific td:first-child styling as the first column is no longer an empty header */
+
+        .cell-content-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 8px;
+            width: 100%;
+            padding: 4px 0;
+        }
+        td.audio-cell {
+             padding: 4px;
+             vertical-align: top;
+        }
+        audio {
+
+    display: block; /* Change from none to block or inline-block */
+    margin-top: 5px; /* Add some space above the controls */
+    width: 100%; /* Make the controls take full width of the container */
+    max-width: 300px; /* Adjust as needed */
+        }
+        .play-pause-button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75em;
+            min-width: 50px;
+            transition: background-color 0.2s ease;
+            display: inline-block;
+        }
+        .play-pause-button:hover {
+            background-color: #2980b9;
+        }
+
+        .spectrogram-img {
+            display: block;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            background-color: #f0f0f0;
+            cursor: zoom-in;
+            object-fit: cover;
+            max-width: 90%;
+            height: 300px;
+            margin: 0 auto 5px auto;
+        }
+        .spectrogram-img::before {
+            content: attr(alt);
+            display: block;
+            text-align: center;
+            font-size: 0.7em;
+            color: #777;
+            padding: 2px;
+            width: 100%;
+            box-sizing: border-box;
+            line-height: 96px;
+        }
+        .spectrogram-img[src]:not([src=""]) {
+            background-color: transparent;
+        }
+        .spectrogram-img[src]:not([src=""])::before {
+            display: none;
+        }
+
+         .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.7);
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            position: relative;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            width: auto;
+            max-width: 90vw;
+            max-height: 90vh;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+        }
+        .modal-content img {
+             display: block;
+             max-width: 100%;
+             max-height: calc(90vh - 40px);
+             height: auto;
+             border-radius: 3px;
+        }
+        .close-modal {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            color: #333;
+            background-color: #fff;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            transition: 0.3s;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            border: 1px solid #ddd;
+        }
+        .close-modal:hover,
+        .close-modal:focus {
+            color: #000;
+            background-color: #f1f1f1;
+            text-decoration: none;
+        }
+
+        footer {
+            margin-top: 3em;
+            padding-top: 1.5em;
+            border-top: 1px solid #dee2e6;
+            text-align: center;
+            font-size: 0.85em;
+            color: #6c757d;
+        }
+
+        @media (max-width: 1200px) {
+             .spectrogram-img { height: 80px; }
+             .spectrogram-img::before { line-height: 76px; }
+        }
+        @media (max-width: 900px) {
+            body { padding: 15px; }
+            h1 { font-size: 1.5em; }
+            h2 { font-size: 1.2em; }
+            .abstract { padding: 12px; }
+            .abstract h2 { font-size: 1.1em; }
+             .spectrogram-img { height: 70px;}
+             .spectrogram-img::before { line-height: 66px; }
+             .cell-content-wrapper { gap: 4px; }
+             .model-description-image-container .architecture-image-wrapper {
+                max-width: 90%;
+            }
+        }
+        @media (max-width: 600px) {
+            h2 { font-size: 1.1em; }
+            .abstract h2 { font-size: 1.0em; }
+             .spectrogram-img { height: 60px; }
+             .spectrogram-img::before { line-height: 56px; }
+            .modal-content { padding: 15px; max-width: 95vw; }
+            .modal-content img { max-height: calc(95vh - 30px); }
+            .close-modal { font-size: 18px; width: 25px; height: 25px; line-height: 25px; top: -8px; right: -8px;}
+            .model-description-image-container .architecture-image-wrapper {
+                max-width: 95%;
+            }
+        }
+         @media (max-width: 480px) {
+            h2 { font-size: 1.0em; }
+            .abstract h2 { font-size: 0.9em; }
+             .spectrogram-img { height: 50px; }
+             .spectrogram-img::before { line-height: 46px; }
+         }
+
+        /* Style for the TOC container (invisible) */
+.toc-container {
+  margin-bottom: 20px;
+  padding: 0; /* Remove padding */
+  border: none; /* Remove border */
+  background-color: transparent; /* Make the background transparent */
+  display: block; /* Or inline-block, depending on your layout needs */
+}
+
+.toc-container h2 {
+  margin-top: 0;
+  font-size: 1.2em;
+  margin-bottom: 5px;
+}
+
+.toc-container ol, .toc-container ul {
+  list-style-type: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.toc-container li {
+  margin-bottom: 3px;
+}
+
+.toc-container a {
+  text-decoration: none;
+  color: blue;
+}
+
+.toc-container a:hover {
+  text-decoration: underline;
+}
+  </style>
+ </head>
+ <body>
+  <div class="main">
+   <article>
+    <header>
+     <h1>
+      Miipher-2: A Universal Speech Restoration Model for Million-Hour Scale Data Restoration
+     </h1>
+    </header>
+   </article>
+   <div class="authors">
+    <a href="https://karita.xyz">
+     Shigeki Karita
+    </a>
+    ,
+    <a href="https://sites.google.com/site/yumakoizumiweb/profile-english">
+     Yuma Koizumi
+    </a>
+    ,
+    <a href="https://research.google/people/heigazen/">
+     Heiga Zen
+    </a>
+    ,
+          Haruko Ishikawa,
+    <a href="https://www.robinscheibler.org">
+     Robin Scheibler
+    </a>
+    ,
+    <a href="http://bacchiani.net/resume/resume.html">
+     Michiel Bacchiani
+    </a>
+   </div>
+
+   <div class="toc-container">
+   <h2>Table of Contents</h2>
+   <ol>
+  <li><a href="#abstract">Abstract</a></li>     
+  <li><a href="#libritts">LibriTTS (Miipher-1 vs Miipher-2)</a></li>
+  <li><a href="#mls">Multilingual LibriSpeech (known languages)</a></li>
+  <li><a href="#fleurs">FLEURS (unknown languages)</a></li>
+  <li><a href="#acknowledgement">Acknowledgement</a></li>
+  <li><a href="#references">References</a></li>
+   </ol>
+   </div>
+
+   
+   <div class="abstract">
+    <h2 id="abstract">Abstract</h2>
+    <p>
+     Training data cleaning is a new application for generative model-based speech restoration (SR). This paper introduces Miipher-2, an SR model designed for million-hour scale data, for training data cleaning for large-scale generative models like large language models. Key challenges addressed include generalization to unseen languages, operation without explicit conditioning (e.g., text, speaker ID), and computational efficiency. Miipher-2 utilizes a frozen, pre-trained Universal Speech Model (USM), supporting over 300 languages, as a robust, conditioning-free feature extractor. To optimize efficiency and minimize memory, Miipher-2 incorporates parallel adapters for predicting clean USM features from noisy inputs and employs the WaneFit neural vocoder for waveform synthesis. These components were trained on 3,000 hours of multilingual, studio-quality recordings with augmented degradations, while USM parameters remained fixed. Experimental results demonstrate Miipher-2 is superior or comparable performance to conventional SR models in word-error-rate, speaker similarity, and both objective and subjective sound quality scores across all tested languages. Miipher-2 operates efficiently on consumer-grade accelerators, achieving a real-time factor of 0.0078, enabling the processing of a million-hour speech dataset in approximately three days using 100 lite accelerators.
+    </p>
+   </div>
+   <div class="model-description-image-container">
+    <div class="architecture-image-wrapper">
+     <img alt="Miipher-2 Model Architecture" src="miipher2.svg"/>
+     <p>Figure 1: Miipher-2 Architecture</p> </div>
+   </div>
+   <hr/>
+
+   <h2 id="libritts">
+    LibriTTS (Miipher-1 vs Miipher-2)
+   </h2>
+   <p class="section-intro-text">
+    This section shows samples of the objective experiments. We evaluated the effectiveness of Miipher-2 using USM and other methods on LibriTTS [1].
+Each table includes the raw LibriTTS input, URGENT2025 [2] baseline TF-GridNet output, Miipher-1 [3] (monolingual with text/speaker conditioning) outputs from LibriTTS-R [4], and our propsoed Miipher-2 (multilingual <b>without</b> text/speaker conditioning) outputs.
+    <br/>
+    Comparing to TF-GridNet, Miipher-1 and our Miipher-2 work very noisy and reverberant environments. In addtion, Miipher-2 can preserve more speaker characteristics and time-frequency structures than Miipher-1.
+   </p>
+
+   <table>
+    <tbody>
+     <tr>
+      <td colspan="4">
+       <b>
+        Example 3005_163391_000039_000000:
+       </b>
+       <i>
+         "How are you on the deef and dumb, Bilgewater?"
+       </i>
+       <br>
+       NOTE: Miipher-2 can restore the noisy input in various intonation by its multilingual capability while Miipher-1 could not preserve the original English intonation in this case.
+      </td>
+     </tr>
+     <tr>
+      <th align="center">
+       LibriTTS input
+       <br/>
+      </th>
+      <th align="center">
+       TF-GridNet
+       <br/>
+      </th>
+      <th align="center">
+       Miipher-1
+       <br/>
+      </th>
+      <th align="center">
+       Miipher-2 (ours)
+       <br/>
+      </th>
+     </tr>
+     <tr>
+      <td align="center" class="audio-cell">
+       <div class="cell-content-wrapper">
+        <img alt="LibriTTS input 3005_163391_000039_000000 Spec" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';" src="libritts/3005_163391_000039_000000_libritts.wav.png"/>
+        <audio id="audio-ltts-3-input" controls preload="metadata" src="libritts/3005_163391_000039_000000_libritts.wav">
+        </audio>
+        
+        
+        
+       </div>
+      </td>
+      <td align="center" class="audio-cell">
+       <div class="cell-content-wrapper">
+        <img alt="TF-GridNet 3005_163391_000039_000000 Spec" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';" src="libritts/3005_163391_000039_000000_urgent25.wav.png"/>
+        <audio id="audio-ltts-3-tf" controls preload="metadata" src="libritts/3005_163391_000039_000000_urgent25.wav">
+        </audio>
+        
+        
+        
+       </div>
+      </td>
+      <td align="center" class="audio-cell">
+       <div class="cell-content-wrapper">
+        <img alt="Miipher-1 3005_163391_000039_000000 Spec" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';" src="libritts/3005_163391_000039_000000_miipher1.wav.png"/>
+        <audio id="audio-ltts-3-m1" controls preload="metadata" src="libritts/3005_163391_000039_000000_miipher1.wav">
+        </audio>
+        
+        
+        
+       </div>
+      </td>
+      <td align="center" class="audio-cell">
+       <div class="cell-content-wrapper">
+        <img alt="Miipher-2 3005_163391_000039_000000 Spec" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';" src="libritts/3005_163391_000039_000000_miipher2.wav.png"/>
+        <audio id="audio-ltts-3-m2" controls preload="metadata" src="libritts/3005_163391_000039_000000_miipher2.wav">
+        </audio>
+        
+        
+        
+       </div>
+      </td>
+     </tr>
+    </tbody>
+   </table>
+
+
+   <table>
+    <tbody>
+     <tr>
+      <td colspan="4">
+       <b>
+        Example 4852_28311_000006_000000:
+       </b>
+       <i>
+        "So-" Mike swallowed.
+       </i>
+       <br/>
+       NOTE: Miipher-2 could restore the word of "So-", while Miipher-1 changed it a lot and TF-GridNet also stuttered the word.
+      </td>
+     </tr>
+     <tr>
+      <th align="center">
+       LibriTTS input
+       <br/>
+      </th>
+      <th align="center">
+       TF-GridNet
+       <br/>
+      </th>
+      <th align="center">
+       Miipher-1
+       <br/>
+      </th>
+      <th align="center">
+       Miipher-2 (ours)
+       <br/>
+      </th>
+     </tr>
+     <tr>
+      <td align="center" class="audio-cell">
+       <div class="cell-content-wrapper">
+        <img alt="LibriTTS input 4852_28311_000006_000000 Spec" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';" src="libritts/4852_28311_000006_000000_libritts.wav.png"/>
+        <audio id="audio-ltts-1-input" controls controls preload="metadata" src="libritts/4852_28311_000006_000000_libritts.wav">
+        </audio>
+       </div>
+      </td>
+      <td align="center" class="audio-cell">
+       <div class="cell-content-wrapper">
+        <img alt="TF-GridNet 4852_28311_000006_000000 Spec" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';" src="libritts/4852_28311_000006_000000_urgent25.wav.png"/>
+        <audio id="audio-ltts-1-tf" controls preload="metadata" src="libritts/4852_28311_000006_000000_urgent25.wav">
+        </audio>
+        
+        
+        
+       </div>
+      </td>
+      <td align="center" class="audio-cell">
+       <div class="cell-content-wrapper">
+        <img alt="Miipher-1 4852_28311_000006_000000 Spec" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';" src="libritts/4852_28311_000006_000000_miipher1.wav.png"/>
+        <audio id="audio-ltts-1-m1" controls preload="metadata" src="libritts/4852_28311_000006_000000_miipher1.wav">
+        </audio>
+        
+        
+        
+       </div>
+      </td>
+      <td align="center" class="audio-cell">
+       <div class="cell-content-wrapper">
+        <img alt="Miipher-2 4852_28311_000006_000000 Spec" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';" src="libritts/4852_28311_000006_000000_miipher2.wav.png"/>
+        <audio id="audio-ltts-1-m2" controls preload="metadata" src="libritts/4852_28311_000006_000000_miipher2.wav">
+        </audio>
+        
+        
+        
+       </div>
+      </td>
+     </tr>
+    </tbody>
+   </table>
+
+   <table>
+    <tbody>
+     <tr>
+      <td colspan="4">
+       <b>
+        Example 8280_266249_000082_000000:
+       </b>
+       <i>
+        "Where's that Dutch villain?" Ward was screaming, following up his question with a volley of oaths.
+       <br/>
+       NOTE: Miipher-2 could restore emotional speech while Miipher-1 completely changed the speaker and style.
+       </i>
+      </td>
+     </tr>
+     <tr>
+      <th align="center">
+       LibriTTS input
+       <br/>
+      </th>
+      <th align="center">
+       TF-GridNet
+       <br/>
+      </th>
+      <th align="center">
+       Miipher-1
+       <br/>
+      </th>
+      <th align="center">
+       Miipher-2 (ours)
+       <br/>
+      </th>
+     </tr>
+     <tr>
+      <td align="center" class="audio-cell">
+       <div class="cell-content-wrapper">
+        <img alt="LibriTTS input 8280_266249_000082_000000 Spec" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';" src="libritts/8280_266249_000082_000000_libritts.wav.png"/>
+        <audio id="audio-ltts-3-input" controls preload="metadata" src="libritts/8280_266249_000082_000000_libritts.wav">
+        </audio>
+        
+        
+        
+       </div>
+      </td>
+      <td align="center" class="audio-cell">
+       <div class="cell-content-wrapper">
+        <img alt="TF-GridNet 8280_266249_000082_000000 Spec" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';" src="libritts/8280_266249_000082_000000_urgent25.wav.png"/>
+        <audio id="audio-ltts-3-tf" controls preload="metadata" src="libritts/8280_266249_000082_000000_urgent25.wav">
+        </audio>
+        
+        
+        
+       </div>
+      </td>
+      <td align="center" class="audio-cell">
+       <div class="cell-content-wrapper">
+        <img alt="Miipher-1 8280_266249_000082_000000 Spec" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';" src="libritts/8280_266249_000082_000000_miipher1.wav.png"/>
+        <audio id="audio-ltts-3-m1" controls preload="metadata" src="libritts/8280_266249_000082_000000_miipher1.wav">
+        </audio>
+        
+        
+        
+       </div>
+      </td>
+      <td align="center" class="audio-cell">
+       <div class="cell-content-wrapper">
+        <img alt="Miipher-2 8280_266249_000082_000000 Spec" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';" src="libritts/8280_266249_000082_000000_miipher2.wav.png"/>
+        <audio id="audio-ltts-3-m2" controls preload="metadata" src="libritts/8280_266249_000082_000000_miipher2.wav">
+        </audio>
+        
+        
+        
+       </div>
+      </td>
+     </tr>
+    </tbody>
+   </table>
+
+   <table>
+    <tbody>
+     <tr>
+      <td colspan="4">
+       <b>
+        Example 6128_63244_000002_000000:
+       </b>
+       <i>
+         "I can't talk to those people, I can't!" said Olive Chancellor, with a face which seemed to plead for a remission of responsibility.
+       </i>
+       <br>
+       NOTE: Miipher-1 output sometimes sounds robotic (vocoder-ish) when the input is very breathy.
+      </td>
+     </tr>
+     <tr>
+      <th align="center">
+       LibriTTS input
+       <br/>
+      </th>
+      <th align="center">
+       TF-GridNet
+       <br/>
+      </th>
+      <th align="center">
+       Miipher-1
+       <br/>
+      </th>
+      <th align="center">
+       Miipher-2 (ours)
+       <br/>
+      </th>
+     </tr>
+     <tr>
+      <td align="center" class="audio-cell">
+       <div class="cell-content-wrapper">
+        <img alt="LibriTTS input 6128_63244_000002_000000 Spec" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';" src="libritts/6128_63244_000002_000000_libritts.wav.png"/>
+        <audio id="audio-ltts-3-input" controls preload="metadata" src="libritts/6128_63244_000002_000000_libritts.wav">
+        </audio>
+        
+        
+        
+       </div>
+      </td>
+      <td align="center" class="audio-cell">
+       <div class="cell-content-wrapper">
+        <img alt="TF-GridNet 6128_63244_000002_000000 Spec" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';" src="libritts/6128_63244_000002_000000_urgent25.wav.png"/>
+        <audio id="audio-ltts-3-tf" controls preload="metadata" src="libritts/6128_63244_000002_000000_urgent25.wav">
+        </audio>
+        
+        
+        
+       </div>
+      </td>
+      <td align="center" class="audio-cell">
+       <div class="cell-content-wrapper">
+        <img alt="Miipher-1 6128_63244_000002_000000 Spec" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';" src="libritts/6128_63244_000002_000000_miipher1.wav.png"/>
+        <audio id="audio-ltts-3-m1" controls preload="metadata" src="libritts/6128_63244_000002_000000_miipher1.wav">
+        </audio>
+        
+        
+        
+       </div>
+      </td>
+      <td align="center" class="audio-cell">
+       <div class="cell-content-wrapper">
+        <img alt="Miipher-2 6128_63244_000002_000000 Spec" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';" src="libritts/6128_63244_000002_000000_miipher2.wav.png"/>
+        <audio id="audio-ltts-3-m2" controls preload="metadata" src="libritts/6128_63244_000002_000000_miipher2.wav">
+        </audio>
+        
+        
+        
+       </div>
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   
+
+   <h2 id="mls">
+    Multilingual LibriSpeech (known languages)
+   </h2>
+   <p class="section-intro-text">
+    This section shows samples of the subjective experiments on mulitlingual librispeech (MLS) [5], which has languages overlapped with our finetuning dataset.
+   </p>
+  <table>
+    <tbody>
+     <tr>
+      <td colspan="2">
+       <b>
+        Example de_de 1844_931_000007:
+       </b>
+       <i>
+        poste gefasst und wie trabanten mit langen stangen bewaffnet lassen sie deren inschriften embleme über den köpfen ihrer männer und söhne hin und her wehen diese inschriften lauten der marquis von blandford ist gegen das billige brot
+       </i>
+       <br>
+       NOTE: This output demonstrated that Miipher-2 can recover bandlimited and noisy background recording.
+      </td>
+     </tr>
+     <tr>
+      <th align="center">
+       MLS input
+       <br/>
+      </th>
+      <th align="center">
+       Miipher-2 (ours)
+       <br/>
+      </th>
+     </tr>
+     <tr>
+      <td align="center" class="audio-cell">
+       <div class="cell-content-wrapper">
+        <img alt="MLS input de_de 1844_931_000007 Spec" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';" src="mls/de_de_1844_931_000007.wav.png"/>
+        <audio id="audio-mls-de-input" controls preload="metadata" src="mls/de_de_1844_931_000007.wav">
+        </audio>
+        
+        
+        
+       </div>
+      </td>
+      <td align="center" class="audio-cell">
+       <div class="cell-content-wrapper">
+        <img alt="Miipher-2 de_de 1844_931_000007 Spec" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';" src="mls/de_de_1844_931_000007_miipher2.wav.png"/>
+        <audio id="audio-mls-de-m2" controls preload="metadata" src="mls/de_de_1844_931_000007_miipher2.wav">
+        </audio>
+        
+        
+        
+       </div>
+      </td>
+     </tr>
+    </tbody>
+   </table>
+    <table>
+    <tbody>
+     <tr>
+      <td colspan="2">
+       <b>
+        Example es_es 10667_6706_000019:
+       </b>
+       <i>
+        porque si no caía en la boca del tigre y entonces gritó rica papa atención más cerca aún rugió el tigre agachándose para saltar rico té con leche cuidado va a saltar
+       </i>
+       <br>
+       NOTE: It is difficult to find noisy es_es samples because es_es showed the highest DNSMOS and SQuID quality scores in the MLS.
+      </td>
+     </tr>
+     <tr>
+      <th align="center">
+       MLS input
+       <br/>
+      </th>
+      <th align="center">
+       Miipher-2 (ours)
+       <br/>
+      </th>
+     </tr>
+     <tr>
+      <td align="center" class="audio-cell">
+       <div class="cell-content-wrapper">
+        <img alt="MLS input es_es 10667_6706_000019 Spec" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';" src="mls/es_es_10667_6706_000019.wav.png"/>
+        <audio id="audio-mls-es-input" controls preload="metadata" src="mls/es_es_10667_6706_000019.wav">
+        </audio>
+        
+        
+        
+       </div>
+      </td>
+      <td align="center" class="audio-cell">
+       <div class="cell-content-wrapper">
+        <img alt="Miipher-2 es_es 10667_6706_000019 Spec" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';" src="mls/es_es_10667_6706_000019_miipher2.wav.png"/>
+        <audio id="audio-mls-es-m2" controls preload="metadata" src="mls/es_es_10667_6706_000019_miipher2.wav">
+        </audio>
+        
+        
+        
+       </div>
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <table>
+    <tbody>
+     <tr>
+      <td colspan="2">
+       <b>
+        Example fr_fr 2223_1745_000094:
+       </b>
+       <i>
+        race stupide et idiote tu te repentiras de te conduire ainsi c'est moi qui te le dis tu t'en repentiras va tu t'en repentiras
+       </i>
+      </td>
+     </tr>
+     <tr>
+      <th align="center">
+       MLS input
+       <br/>
+      </th>
+      <th align="center">
+       Miipher-2 (ours)
+       <br/>
+      </th>
+     </tr>
+     <tr>
+      <td align="center" class="audio-cell">
+       <div class="cell-content-wrapper">
+        <img alt="MLS input fr_fr 2223_1745_000094 Spec" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';" src="mls/fr_fr_2223_1745_000094.wav.png"/>
+        <audio id="audio-mls-fr-input" controls preload="metadata" src="mls/fr_fr_2223_1745_000094.wav">
+        </audio>
+        
+        
+        
+       </div>
+      </td>
+      <td align="center" class="audio-cell">
+       <div class="cell-content-wrapper">
+        <img alt="Miipher-2 fr_fr 2223_1745_000094 Spec" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';" src="mls/fr_fr_2223_1745_000094_miipher2.wav.png"/>
+        <audio id="audio-mls-fr-m2" controls preload="metadata" src="mls/fr_fr_2223_1745_000094_miipher2.wav">
+        </audio>
+        
+        
+        
+       </div>
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <table>
+    <tbody>
+     <tr>
+      <td colspan="2">
+       <b>
+        Example it_it 280_529_000090:
+       </b>
+       <i>
+        e chinando la mano a la sua faccia rispuosi siete voi qui ser brunetto e quelli oh figliuol mio non ti dispiaccia se brunetto latino un poco teco ritorna indietro e lascia andar la traccia
+       </i>
+      </td>
+     </tr>
+     <tr>
+      <th align="center">
+       MLS input
+       <br/>
+      </th>
+      <th align="center">
+       Miipher-2 (ours)
+       <br/>
+      </th>
+     </tr>
+     <tr>
+      <td align="center" class="audio-cell">
+       <div class="cell-content-wrapper">
+        <img alt="MLS input it_it 280_529_000090 Spec" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';" src="mls/it_it_280_529_000090.wav.png"/>
+        <audio id="audio-mls-it-input" controls preload="metadata" src="mls/it_it_280_529_000090.wav">
+        </audio>
+        
+        
+        
+       </div>
+      </td>
+      <td align="center" class="audio-cell">
+       <div class="cell-content-wrapper">
+        <img alt="Miipher-2 it_it 280_529_000090 Spec" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';" src="mls/it_it_280_529_000090_miipher2.wav.png"/>
+        <audio id="audio-mls-it-m2" controls preload="metadata" src="mls/it_it_280_529_000090_miipher2.wav">
+        </audio>
+        
+        
+        
+       </div>
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <table>
+    <tbody>
+     <tr>
+      <td colspan="2">
+       <b>
+        Example nl_nl 4429_3991_000055:
+       </b>
+       <i>
+        god zegene uw lief kalm gelaat riep zij zenuwachtig snikkend het doet mij goed u te zien o wat heb ik heden een dag vol angst doorgemaakt
+       </i>
+      </td>
+     </tr>
+     <tr>
+      <th align="center">
+       MLS input
+       <br/>
+      </th>
+      <th align="center">
+       Miipher-2 (ours)
+       <br/>
+      </th>
+     </tr>
+     <tr>
+      <td align="center" class="audio-cell">
+       <div class="cell-content-wrapper">
+        <img alt="MLS input nl_nl 4429_3991_000055 Spec" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';" src="mls/nl_nl_4429_3991_000055.wav.png"/>
+        <audio id="audio-mls-nl-input" controls preload="metadata" src="mls/nl_nl_4429_3991_000055.wav">
+        </audio>
+        
+        
+        
+       </div>
+      </td>
+      <td align="center" class="audio-cell">
+       <div class="cell-content-wrapper">
+        <img alt="Miipher-2 nl_nl 4429_3991_000055 Spec" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';" src="mls/nl_nl_4429_3991_000055_miipher2.wav.png"/>
+        <audio id="audio-mls-nl-m2" controls preload="metadata" src="mls/nl_nl_4429_3991_000055_miipher2.wav">
+        </audio>
+        
+        
+        
+       </div>
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <table>
+    <tbody>
+     <tr>
+      <td colspan="2">
+       <b>
+        Example pl_pl 9098_8338_000085:
+       </b>
+       <i>
+        uwiązał się on w przyzwoitej odległości na nitce która mu służy za linkę bezpieczeństwa na wypadek brutalnego odepchnięcia zrzucony na przykład z siatki na niej zawisa w powietrzu aby nie zlecieć na ziemię
+       </i>
+      </td>
+     </tr>
+     <tr>
+      <th align="center">
+       MLS input
+       <br/>
+      </th>
+      <th align="center">
+       Miipher-2 (ours)
+       <br/>
+      </th>
+     </tr>
+     <tr>
+      <td align="center" class="audio-cell">
+       <div class="cell-content-wrapper">
+        <img alt="MLS input pl_pl 9098_8338_000085 Spec" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';" src="mls/pl_pl_9098_8338_000085.wav.png"/>
+        <audio id="audio-mls-pl-input" controls preload="metadata" src="mls/pl_pl_9098_8338_000085.wav">
+        </audio>
+        
+        
+        
+       </div>
+      </td>
+      <td align="center" class="audio-cell">
+       <div class="cell-content-wrapper">
+        <img alt="Miipher-2 pl_pl 9098_8338_000085 Spec" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';" src="mls/pl_pl_9098_8338_000085_miipher2.wav.png"/>
+        <audio id="audio-mls-pl-m2" controls preload="metadata" src="mls/pl_pl_9098_8338_000085_miipher2.wav">
+        </audio>
+        
+        
+        
+       </div>
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <table>
+    <tbody>
+     <tr>
+      <td colspan="2">
+       <b>
+        Example pt_pt 5739_4739_000087:
+       </b>
+       <i>
+        não sei mas seja ou não impossível não é a conversão que eu peço basta-me que seja menos indiferente e mais compassivo mas que pretendes fazer perguntou adelaide sentindo que as lágrimas também lhe rebentavam dos olhos houve alguns instantes de silêncio mas o que tu não sabes continuou emília é que ele não é para mim um simples
+       </i>
+       <br/>
+       <b>
+        NOTE: this pt_pt example consists of multiple speakers.
+       </b>
+      </td>
+     </tr>
+     <tr>
+      <th align="center">
+       MLS input
+       <br/>
+      </th>
+      <th align="center">
+       Miipher-2 (ours)
+       <br/>
+      </th>
+     </tr>
+     <tr>
+      <td align="center" class="audio-cell">
+       <div class="cell-content-wrapper">
+        <img alt="MLS input pt_pt 5739_4739_000087 Spec" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';" src="mls/pt_br_5739_4739_000087.wav.png"/>
+        <audio id="audio-mls-pt-input" controls preload="metadata" src="mls/pt_br_5739_4739_000087.wav">
+        </audio>
+        
+        
+        
+       </div>
+      </td>
+      <td align="center" class="audio-cell">
+       <div class="cell-content-wrapper">
+        <img alt="Miipher-2 pt_pt 5739_4739_000087 Spec" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';" src="mls/pt_br_5739_4739_000087_miipher2.wav.png"/>
+        <audio id="audio-mls-pt-m2" controls preload="metadata" src="mls/pt_br_5739_4739_000087_miipher2.wav">
+        </audio>
+        
+        
+        
+       </div>
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <h2 id="fleurs">
+    FLEURS (unknown languages)
+   </h2>
+   <p class="section-intro-text">
+    This section shows samples of the objective experiments on FLEURS[6], which has low-resource languages unavailable in our finetuning dataset. We selected one locales per FLEURS language categories except for CJK locales, which were fully covered by our finetuning data.
+  Comparing to MLS, its samples are much more noisy and reverberant but Miipher-2 can somehow restore clean speech with subtle noise.
+   </p>
+   <table>
+    <tbody>
+     <tr>
+      <td colspan="2">
+       <b>
+        Example ca_es 001633443218971:
+       </b>
+       <i>
+        Això sembla raonable perquè no tenim pas la sensació que la Terra s'estigui movent o sí
+       </i>
+      </td>
+     </tr>
+     <tr>
+      <th align="center">
+       FLEURS input
+       <br/>
+      </th>
+      <th align="center">
+       Miipher-2 (ours)
+       <br/>
+      </th>
+     </tr>
+     <tr>
+      <td align="center" class="audio-cell">
+       <div class="cell-content-wrapper">
+        <img alt="FLEURS input ca_es 001633443218971 Spec" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';" src="fleurs/ca_es_001633443218971.wav.png"/>
+        <audio id="audio-fleurs-ca-input" controls preload="metadata" src="fleurs/ca_es_001633443218971.wav">
+        </audio>
+        
+        
+        
+       </div>
+      </td>
+      <td align="center" class="audio-cell">
+       <div class="cell-content-wrapper">
+        <img alt="Miipher-2 ca_es 001633443218971 Spec" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';" src="fleurs/ca_es_001633443218971_miipher2.wav.png"/>
+        <audio id="audio-fleurs-ca-m2" controls preload="metadata" src="fleurs/ca_es_001633443218971_miipher2.wav">
+        </audio>
+        
+        
+        
+       </div>
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <table>
+    <tbody>
+     <tr>
+      <td colspan="2">
+       <b>
+        Example ru_ru 001633540429756:
+       </b>
+       <i>
+        Их термические характеристики не такие стабильные как у больших пещер на Земле которые часто поддерживают почти постоянную температуру но они соответствуют тому что является глубокими ямами в грунте — сообщил Глен Кушинг из отдела планетной геологии Геологической службы США и Университета Северной Аризоны расположенного во Флагстаффе Аризона
+       </i>
+      </td>
+     </tr>
+     <tr>
+      <th align="center">
+       FLEURS input
+       <br/>
+      </th>
+      <th align="center">
+       Miipher-2 (ours)
+       <br/>
+      </th>
+     </tr>
+     <tr>
+      <td align="center" class="audio-cell">
+       <div class="cell-content-wrapper">
+        <img alt="FLEURS input ru_ru 001633540429756 Spec" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';" src="fleurs/ru_ru_001633540429756.wav.png"/>
+        <audio id="audio-fleurs-ru-input" controls preload="metadata" src="fleurs/ru_ru_001633540429756.wav">
+        </audio>
+        
+        
+        
+       </div>
+      </td>
+      <td align="center" class="audio-cell">
+       <div class="cell-content-wrapper">
+        <img alt="Miipher-2 ru_ru 001633540429756 Spec" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';" src="fleurs/ru_ru_001633540429756_miipher2.wav.png"/>
+        <audio id="audio-fleurs-ru-m2" controls preload="metadata" src="fleurs/ru_ru_001633540429756_miipher2.wav">
+        </audio>
+        
+        
+        
+       </div>
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <table>
+    <tbody>
+     <tr>
+      <td colspan="2">
+       <b>
+        Example ur_pk 001633351247178:
+       </b>
+       <i>
+        سندربن دنیا کا سب سے بڑا ساحلی مینگروو بیلٹ ہے جو ساحلی علاقے سے بنگلادیشی اور ہندوستان کے دور افتادہ پسماندہ علاقے میں 80 کیلو میٹر 50 میل تک پھیلا ہوا ہے
+       </i>
+      </td>
+     </tr>
+     <tr>
+      <th align="center">
+       FLEURS input
+       <br/>
+      </th>
+      <th align="center">
+       Miipher-2 (ours)
+       <br/>
+      </th>
+     </tr>
+     <tr>
+      <td align="center" class="audio-cell">
+       <div class="cell-content-wrapper">
+        <img alt="FLEURS input ur_pk 001633351247178 Spec" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';" src="fleurs/ur_pk_001633351247178.wav.png"/>
+        <audio id="audio-fleurs-ur-input" controls preload="metadata" src="fleurs/ur_pk_001633351247178.wav">
+        </audio>
+        
+        
+        
+       </div>
+      </td>
+      <td align="center" class="audio-cell">
+       <div class="cell-content-wrapper">
+        <img alt="Miipher-2 ur_pk 001633351247178 Spec" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';" src="fleurs/ur_pk_001633351247178_miipher2.wav.png"/>
+        <audio id="audio-fleurs-ur-m2" controls preload="metadata" src="fleurs/ur_pk_001633351247178_miipher2.wav">
+        </audio>
+        
+        
+        
+       </div>
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <table>
+    <tbody>
+     <tr>
+      <td colspan="2">
+       <b>
+        Example sw_ke 001634489347424:
+       </b>
+       <i>
+        Unaweza kutumia boda-boda teksi ya pikipiki kuzunguka Goma Nauli ya kawaida kwa wenyeji ni Franki 500 za Kongo kwa safari fupi
+       </i>
+      </td>
+     </tr>
+     <tr>
+      <th align="center">
+       FLEURS input
+       <br/>
+      </th>
+      <th align="center">
+       Miipher-2 (ours)
+       <br/>
+      </th>
+     </tr>
+     <tr>
+      <td align="center" class="audio-cell">
+       <div class="cell-content-wrapper">
+        <img alt="FLEURS input sw_ke 001634489347424 Spec" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';" src="fleurs/sw_ke_001634489347424.wav.png"/>
+        <audio id="audio-fleurs-sw-input" controls preload="metadata" src="fleurs/sw_ke_001634489347424.wav">
+        </audio>
+        
+        
+        
+       </div>
+      </td>
+      <td align="center" class="audio-cell">
+       <div class="cell-content-wrapper">
+        <img alt="Miipher-2 sw_ke 001634489347424 Spec" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';" src="fleurs/sw_ke_001634489347424_miipher2.wav.png"/>
+        <audio id="audio-fleurs-sw-m2" controls preload="metadata" src="fleurs/sw_ke_001634489347424_miipher2.wav">
+        </audio>
+        
+        
+        
+       </div>
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <table>
+    <tbody>
+     <tr>
+      <td colspan="2">
+       <b>
+        Example mi_nz 001635418752917:
+       </b>
+       <i>
+        Nā Hong Kong Island te ingoa o te rohe o Hong Kong ā koirā te wāhi ka whakaarohia e ngā tini tūruhi hei aronga matua
+       </i>
+      </td>
+     </tr>
+     <tr>
+      <th align="center">
+       FLEURS input
+       <br/>
+      </th>
+      <th align="center">
+       Miipher-2 (ours)
+       <br/>
+      </th>
+     </tr>
+     <tr>
+      <td align="center" class="audio-cell">
+       <div class="cell-content-wrapper">
+        <img alt="FLEURS input mi_nz 001635418752917 Spec" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';" src="fleurs/mi_nz_001635418752917.wav.png"/>
+        <audio id="audio-fleurs-mi-input" controls preload="metadata" src="fleurs/mi_nz_001635418752917.wav">
+        </audio>
+        
+        
+        
+       </div>
+      </td>
+      <td align="center" class="audio-cell">
+       <div class="cell-content-wrapper">
+        <img alt="Miipher-2 mi_nz 001635418752917 Spec" class="spectrogram-img" onerror="this.style.display='none'; this.closest('.cell-content-wrapper').querySelector('.play-pause-button').style.marginTop='0';" src="fleurs/mi_nz_001635418752917_miipher2.wav.png"/>
+        <audio id="audio-fleurs-mi-m2" controls preload="metadata" src="fleurs/mi_nz_001635418752917_miipher2.wav">
+        </audio>
+        
+        
+        
+       </div>
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <hr/>
+   <h2 id="acknowledgement">
+    Acknowledgement
+   </h2>
+   <p>
+    We appreciate valuable feedback and support from
+Keisuke Kinoshita,
+Bhuvana Ramabhadran,
+Richard William Sproat,
+Yotaro Kubo,
+Wataru Nakata.
+   </p>
+   <h2 id="references">
+    References
+   </h2>
+   <p>
+    [1] H. Zen et al., "LibriTTS: A Corpus Derived from LibriSpeech for Text-to-Speech," Proc. Interspeech 2019, doi: 10.21437/Interspeech.2019-2441
+    <a href="http://www.openslr.org/60/">
+     http://www.openslr.org/60/
+    </a>
+   </p>
+   <p>
+    [2] K. Saijo et al., "TF-GridNet baseline", Interspeech URGENT 2025 challenge
+    <a href="https://huggingface.co/kohei0209/tfgridnet_urgent25">
+     https://huggingface.co/kohei0209/tfgridnet_urgent25
+    </a>
+   </p>
+   <p>
+    [3] Y. Koizumi et al., "Miipher: A Robust Speech Restoration Model Integrating Self-Supervised Speech and Text Representations," 2023 IEEE Workshop on Applications of Signal Processing to Audio and Acoustics (WASPAA), doi: 10.1109/WASPAA58266.2023.10248089.
+    <a href="https://arxiv.org/abs/2303.01664">
+     https://arxiv.org/abs/2303.01664
+    </a>
+   </p>
+   <p>
+    [4] Y. Koizumi et al., "LibriTTS-R: A Restored Multi-Speaker Text-to-Speech Corpus," Proc. Interspeech 2023, doi: 10.21437/Interspeech.2023-1584
+    <a href="https://www.openslr.org/141/">
+     https://www.openslr.org/141/
+    </a>
+   </p>
+   <p>
+    [5] V. Pratap et al., "MLS: A Large-Scale Multilingual Dataset for Speech Research," Proc. Interspeech 2020, doi: 10.21437/Interspeech.2020-2826
+    <a href="https://www.openslr.org/94/">
+     https://www.openslr.org/94/
+    </a>
+   </p>
+   <p>
+    [6] A. Conneau et al., "FLEURS: FEW-Shot Learning Evaluation of Universal Representations of Speech," 2022 IEEE Spoken Language Technology Workshop (SLT), pp. 798-805, doi: 10.1109/SLT54892.2023.10023141.
+    <a href="https://huggingface.co/datasets/google/fleurs">
+     https://huggingface.co/datasets/google/fleurs
+    </a>
+   </p>
+  </div>
+  <div class="modal" id="spectrogramModal">
+   <div class="modal-content">
+    <span class="close-modal">
+     ×
+    </span>
+    <img alt="Zoomed Spectrogram" id="zoomedSpectrogram" src=""/>
+   </div>
+  </div>
+  <footer>
+   <p>
+    Audio samples generated for "Miipher-2".
+   </p>
+  </footer>
+  <script>
+        let allAudioElements = [];
+
+        function pauseAllOtherAudio(currentAudioEl) {
+            allAudioElements.forEach(audioEl => {
+                if (audioEl !== currentAudioEl && !audioEl.paused) {
+                    audioEl.pause();
+                    let buttonId = audioEl.id.replace('audio-', 'button-');
+                    const button = document.getElementById(buttonId);
+                    if (button) {
+                        button.textContent = 'Play';
+                    }
+                }
+            });
+        }
+
+        function toggleTablePlayPause(audioId, buttonElement) {
+            const audio = document.getElementById(audioId);
+            if (!audio) {
+                console.error('Audio element not found:', audioId);
+                return;
+            }
+            pauseAllOtherAudio(audio);
+
+            if (audio.paused || audio.ended) {
+                audio.play().catch(error => console.error("Error playing audio:", audioId, error));
+                buttonElement.textContent = 'Pause';
+            } else {
+                audio.pause();
+                buttonElement.textContent = 'Play';
+            }
+        }
+
+        function handleAudioEndGeneral() {
+            let buttonId = this.id.replace('audio-', 'button-');
+            const buttonElement = document.getElementById(buttonId);
+            if (buttonElement) {
+                buttonElement.textContent = 'Play';
+            }
+        }
+
+        const modal = document.getElementById("spectrogramModal");
+        const modalImg = document.getElementById("zoomedSpectrogram");
+        let closeModalSpan;
+
+        function openSpectrogramModal(event) {
+            if (event.target.classList.contains("spectrogram-img")) {
+                const imgSrc = event.target.getAttribute("src");
+                if (imgSrc && imgSrc !== "") {
+                    const imgCheck = new Image();
+                    imgCheck.onload = () => {
+                         modal.style.display = "flex";
+                         modalImg.src = imgSrc;
+                         modalImg.alt = event.target.alt || "Zoomed Spectrogram";
+                    }
+                    imgCheck.onerror = () => {
+                         console.log("Cannot zoom into a broken image:", imgSrc);
+                    }
+                    imgCheck.src = imgSrc;
+
+                } else {
+                    console.log("Cannot zoom into an image without a valid source.");
+                }
+            }
+        }
+
+
+        function closeModal() {
+            if (modal) {
+                modal.style.display = "none";
+                modalImg.src = "";
+                modalImg.alt = "";
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            allAudioElements = Array.from(document.querySelectorAll('audio'));
+
+            if (modal) modal.style.display = "none";
+            if (modalImg) {
+                modalImg.src = "";
+                modalImg.alt = "";
+            }
+
+            closeModalSpan = document.querySelector(".modal-content .close-modal");
+
+            allAudioElements.forEach(audio => {
+                audio.addEventListener('ended', handleAudioEndGeneral);
+                let buttonId = audio.id.replace('audio-', 'button-');
+                const buttonElement = document.getElementById(buttonId);
+                if (buttonElement) {
+                    buttonElement.textContent = audio.paused ? 'Play' : 'Pause';
+                    if (!buttonElement.getAttribute('onclick')) {
+                         buttonElement.onclick = function() { toggleTablePlayPause(audio.id, this); };
+                    }
+                } else {
+                     console.warn("Button not found for audio element:", audio.id);
+                }
+            });
+
+            const allSpectrogramImages = document.querySelectorAll(".spectrogram-img");
+            allSpectrogramImages.forEach(img => {
+                img.addEventListener("click", openSpectrogramModal);
+            });
+
+            if (closeModalSpan) closeModalSpan.onclick = closeModal;
+
+            window.onclick = function(event) {
+                if (event.target == modal) closeModal();
+            };
+            document.addEventListener('keydown', function(event) {
+                if (modal && modal.style.display === "flex" && event.key === "Escape") closeModal();
+            });
+        });
+  </script>
+ </body>
+</html>

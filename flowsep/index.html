@@ -1,0 +1,1743 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic Paper Presentation</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 40px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        h1, h2, h3 {
+            color: #1f2937;
+        }
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-top: 30px;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #e2e7f0;
+            padding-bottom: 5px;
+        }
+        h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-top: 25px;
+            margin-bottom: 10px;
+        }
+        p {
+            line-height: 1.6;
+            color: #4b5563;
+            margin-bottom: 15px;
+        }
+        .table-container {
+              overflow-x: auto; /* Enable horizontal scrolling */
+              max-width: 100%; /* Limit table width to its container */
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #e2e7f0;
+            padding: 12px;
+            text-align: center;
+            vertical-align: middle;
+        }
+        th {
+            background-color: #f1f3f5;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        tr:nth-child(4n+1), tr:nth-child(4n+2) {
+            background-color: #f0fff4; /* Light pastel green for the first two rows */
+        }
+        tr:nth-child(4n+3), tr:nth-child(4n) {
+            background-color: #e6f7ff; /* #fff9c4; Light pastel yellow for the next two rows */
+        }
+        audio {
+            width: 150px;
+            height: 25px;
+        }
+        .authors {
+            text-align: center;
+            font-size: 1.1rem;
+            color: #6b7280;
+            margin-bottom: 30px;
+        }
+        .abstract-box {
+            background-color: #e6f7ff; /* Light pastel blue background for the abstract box */
+            padding: 20px;
+            border-radius: 8px; /* Rounded corners for the abstract box */
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+      <h1>Source Separation by Flow Matching</h1>
+        <div class="authors">
+          By Robin Scheibler, John R. Hershey, Arnaud Doucet, and Henry Li (Google DeepMind)
+        </div>
+
+        <div class="abstract-box">
+            <h2>Abstract</h2>
+            <p>
+            
+We consider the problem of single-channel audio source separation with the goal of reconstructing K sources from their mixture.
+We address this ill-posed problem with Flowsep, a constrained generation method based on flow matching, ensuring strict mixture consistency.
+Flow matching is a general methodology that, when given samples from two probability distributions defined on the same space, learns an ordinary differential equation to output a sample from one of the distributions when provided with a sample from the other.
+In our context, we have access to samples from the joint distribution of K sources and so the corresponding samples from the lower-dimensional distribution of their mixture.
+To apply flow matching, we augment these mixture samples with artificial noise components to ensure the resulting ``augmented" distribution matches the dimensionality of the K source distribution.
+Additionally, as any permutation of the sources yields the same mixture, we adopt an equivariant formulation of flow matching which relies on a suitable custom-designed neural network architecture.
+We demonstrate the performance of the method for the separation of overlapping speech.
+
+            </p>
+        </div>
+
+        <h2>Audio Samples</h2>
+        <p>
+            The following table presents audio samples used in the study.
+        </p>
+
+        <div class=table-container>
+        <table>
+<thead>
+<th>Sample</th>
+<th>Mixture</th>
+<th>Targets</th>
+<th>Conv-TasNet</th>
+<th>Mel-band split Locoformer</th>
+<th>Diffsep</th>
+<th>EDSep</th>
+<th>Flowsep (25 steps)</th>
+<th>Flowsep (1 step)</th>
+<th>Flowsep (5 steps)</th>
+</thead>
+<tr>
+<td rowspan="2">
+1
+</td>
+<td rowspan="2">
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0000_mixture_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0000_mixture_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0000_targets_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0000_targets_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0000_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0000_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_161938646-101.step_100000-seed_984104/0000_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_161938646-101.step_100000-seed_984104/0000_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_158819540-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_euler/0000_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_158819540-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_euler/0000_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_161567969-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_edsep/0000_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_161567969-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_edsep/0000_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.25-solver_euler/0000_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.25-solver_euler/0000_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.1-solver_euler/0000_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.1-solver_euler/0000_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.custom.5-solver_euler/0000_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.custom.5-solver_euler/0000_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+</tr>
+<tr>
+<td>
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0000_targets_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0000_targets_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0000_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0000_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_161938646-101.step_100000-seed_984104/0000_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_161938646-101.step_100000-seed_984104/0000_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_158819540-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_euler/0000_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_158819540-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_euler/0000_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_161567969-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_edsep/0000_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_161567969-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_edsep/0000_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.25-solver_euler/0000_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.25-solver_euler/0000_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.1-solver_euler/0000_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.1-solver_euler/0000_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.custom.5-solver_euler/0000_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.custom.5-solver_euler/0000_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+</tr>
+<tr>
+<td rowspan="2">
+2
+</td>
+<td rowspan="2">
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0017_mixture_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0017_mixture_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0017_targets_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0017_targets_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0017_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0017_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_161938646-101.step_100000-seed_984104/0017_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_161938646-101.step_100000-seed_984104/0017_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_158819540-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_euler/0017_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_158819540-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_euler/0017_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_161567969-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_edsep/0017_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_161567969-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_edsep/0017_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.25-solver_euler/0017_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.25-solver_euler/0017_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.1-solver_euler/0017_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.1-solver_euler/0017_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.custom.5-solver_euler/0017_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.custom.5-solver_euler/0017_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+</tr>
+<tr>
+<td>
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0017_targets_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0017_targets_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0017_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0017_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_161938646-101.step_100000-seed_984104/0017_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_161938646-101.step_100000-seed_984104/0017_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_158819540-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_euler/0017_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_158819540-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_euler/0017_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_161567969-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_edsep/0017_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_161567969-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_edsep/0017_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.25-solver_euler/0017_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.25-solver_euler/0017_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.1-solver_euler/0017_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.1-solver_euler/0017_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.custom.5-solver_euler/0017_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.custom.5-solver_euler/0017_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+</tr>
+<tr>
+<td rowspan="2">
+3
+</td>
+<td rowspan="2">
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0273_mixture_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0273_mixture_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0273_targets_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0273_targets_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0273_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0273_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_161938646-101.step_100000-seed_984104/0273_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_161938646-101.step_100000-seed_984104/0273_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_158819540-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_euler/0273_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_158819540-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_euler/0273_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_161567969-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_edsep/0273_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_161567969-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_edsep/0273_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.25-solver_euler/0273_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.25-solver_euler/0273_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.1-solver_euler/0273_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.1-solver_euler/0273_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.custom.5-solver_euler/0273_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.custom.5-solver_euler/0273_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+</tr>
+<tr>
+<td>
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0273_targets_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0273_targets_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0273_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0273_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_161938646-101.step_100000-seed_984104/0273_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_161938646-101.step_100000-seed_984104/0273_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_158819540-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_euler/0273_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_158819540-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_euler/0273_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_161567969-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_edsep/0273_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_161567969-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_edsep/0273_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.25-solver_euler/0273_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.25-solver_euler/0273_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.1-solver_euler/0273_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.1-solver_euler/0273_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.custom.5-solver_euler/0273_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.custom.5-solver_euler/0273_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+</tr>
+<tr>
+<td rowspan="2">
+4
+</td>
+<td rowspan="2">
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0321_mixture_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0321_mixture_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0321_targets_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0321_targets_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0321_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0321_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_161938646-101.step_100000-seed_984104/0321_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_161938646-101.step_100000-seed_984104/0321_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_158819540-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_euler/0321_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_158819540-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_euler/0321_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_161567969-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_edsep/0321_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_161567969-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_edsep/0321_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.25-solver_euler/0321_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.25-solver_euler/0321_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.1-solver_euler/0321_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.1-solver_euler/0321_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.custom.5-solver_euler/0321_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.custom.5-solver_euler/0321_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+</tr>
+<tr>
+<td>
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0321_targets_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0321_targets_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0321_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0321_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_161938646-101.step_100000-seed_984104/0321_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_161938646-101.step_100000-seed_984104/0321_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_158819540-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_euler/0321_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_158819540-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_euler/0321_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_161567969-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_edsep/0321_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_161567969-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_edsep/0321_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.25-solver_euler/0321_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.25-solver_euler/0321_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.1-solver_euler/0321_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.1-solver_euler/0321_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.custom.5-solver_euler/0321_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.custom.5-solver_euler/0321_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+</tr>
+<tr>
+<td rowspan="2">
+5
+</td>
+<td rowspan="2">
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0438_mixture_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0438_mixture_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0438_targets_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0438_targets_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0438_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0438_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_161938646-101.step_100000-seed_984104/0438_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_161938646-101.step_100000-seed_984104/0438_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_158819540-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_euler/0438_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_158819540-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_euler/0438_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_161567969-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_edsep/0438_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_161567969-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_edsep/0438_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.25-solver_euler/0438_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.25-solver_euler/0438_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.1-solver_euler/0438_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.1-solver_euler/0438_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.custom.5-solver_euler/0438_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.custom.5-solver_euler/0438_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+</tr>
+<tr>
+<td>
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0438_targets_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0438_targets_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0438_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0438_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_161938646-101.step_100000-seed_984104/0438_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_161938646-101.step_100000-seed_984104/0438_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_158819540-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_euler/0438_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_158819540-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_euler/0438_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_161567969-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_edsep/0438_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_161567969-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_edsep/0438_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.25-solver_euler/0438_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.25-solver_euler/0438_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.1-solver_euler/0438_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.1-solver_euler/0438_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.custom.5-solver_euler/0438_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.custom.5-solver_euler/0438_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+</tr>
+<tr>
+<td rowspan="2">
+6
+</td>
+<td rowspan="2">
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0557_mixture_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0557_mixture_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0557_targets_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0557_targets_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0557_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0557_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_161938646-101.step_100000-seed_984104/0557_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_161938646-101.step_100000-seed_984104/0557_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_158819540-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_euler/0557_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_158819540-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_euler/0557_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_161567969-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_edsep/0557_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_161567969-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_edsep/0557_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.25-solver_euler/0557_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.25-solver_euler/0557_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.1-solver_euler/0557_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.1-solver_euler/0557_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.custom.5-solver_euler/0557_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.custom.5-solver_euler/0557_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+</tr>
+<tr>
+<td>
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0557_targets_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0557_targets_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0557_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0557_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_161938646-101.step_100000-seed_984104/0557_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_161938646-101.step_100000-seed_984104/0557_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_158819540-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_euler/0557_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_158819540-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_euler/0557_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_161567969-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_edsep/0557_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_161567969-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_edsep/0557_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.25-solver_euler/0557_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.25-solver_euler/0557_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.1-solver_euler/0557_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.1-solver_euler/0557_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.custom.5-solver_euler/0557_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.custom.5-solver_euler/0557_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+</tr>
+<tr>
+<td rowspan="2">
+7
+</td>
+<td rowspan="2">
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0632_mixture_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0632_mixture_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0632_targets_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0632_targets_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0632_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0632_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_161938646-101.step_100000-seed_984104/0632_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_161938646-101.step_100000-seed_984104/0632_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_158819540-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_euler/0632_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_158819540-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_euler/0632_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_161567969-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_edsep/0632_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_161567969-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_edsep/0632_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.25-solver_euler/0632_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.25-solver_euler/0632_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.1-solver_euler/0632_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.1-solver_euler/0632_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.custom.5-solver_euler/0632_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.custom.5-solver_euler/0632_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+</tr>
+<tr>
+<td>
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0632_targets_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0632_targets_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0632_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0632_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_161938646-101.step_100000-seed_984104/0632_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_161938646-101.step_100000-seed_984104/0632_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_158819540-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_euler/0632_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_158819540-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_euler/0632_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_161567969-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_edsep/0632_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_161567969-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_edsep/0632_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.25-solver_euler/0632_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.25-solver_euler/0632_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.1-solver_euler/0632_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.1-solver_euler/0632_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.custom.5-solver_euler/0632_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.custom.5-solver_euler/0632_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+</tr>
+<tr>
+<td rowspan="2">
+8
+</td>
+<td rowspan="2">
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0779_mixture_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0779_mixture_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0779_targets_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0779_targets_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0779_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0779_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_161938646-101.step_100000-seed_984104/0779_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_161938646-101.step_100000-seed_984104/0779_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_158819540-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_euler/0779_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_158819540-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_euler/0779_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_161567969-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_edsep/0779_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_161567969-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_edsep/0779_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.25-solver_euler/0779_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.25-solver_euler/0779_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.1-solver_euler/0779_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.1-solver_euler/0779_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.custom.5-solver_euler/0779_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.custom.5-solver_euler/0779_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+</tr>
+<tr>
+<td>
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0779_targets_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0779_targets_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0779_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0779_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_161938646-101.step_100000-seed_984104/0779_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_161938646-101.step_100000-seed_984104/0779_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_158819540-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_euler/0779_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_158819540-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_euler/0779_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_161567969-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_edsep/0779_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_161567969-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_edsep/0779_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.25-solver_euler/0779_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.25-solver_euler/0779_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.1-solver_euler/0779_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.1-solver_euler/0779_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.custom.5-solver_euler/0779_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.custom.5-solver_euler/0779_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+</tr>
+<tr>
+<td rowspan="2">
+9
+</td>
+<td rowspan="2">
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0884_mixture_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0884_mixture_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0884_targets_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0884_targets_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0884_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0884_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_161938646-101.step_100000-seed_984104/0884_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_161938646-101.step_100000-seed_984104/0884_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_158819540-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_euler/0884_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_158819540-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_euler/0884_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_161567969-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_edsep/0884_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_161567969-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_edsep/0884_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.25-solver_euler/0884_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.25-solver_euler/0884_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.1-solver_euler/0884_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.1-solver_euler/0884_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.custom.5-solver_euler/0884_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.custom.5-solver_euler/0884_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+</tr>
+<tr>
+<td>
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0884_targets_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0884_targets_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0884_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0884_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_161938646-101.step_100000-seed_984104/0884_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_161938646-101.step_100000-seed_984104/0884_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_158819540-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_euler/0884_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_158819540-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_euler/0884_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_161567969-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_edsep/0884_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_161567969-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_edsep/0884_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.25-solver_euler/0884_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.25-solver_euler/0884_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.1-solver_euler/0884_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.1-solver_euler/0884_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.custom.5-solver_euler/0884_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.custom.5-solver_euler/0884_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+</tr>
+<tr>
+<td rowspan="2">
+10
+</td>
+<td rowspan="2">
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0916_mixture_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0916_mixture_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0916_targets_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0916_targets_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0916_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0916_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_161938646-101.step_100000-seed_984104/0916_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_161938646-101.step_100000-seed_984104/0916_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_158819540-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_euler/0916_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_158819540-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_euler/0916_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_161567969-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_edsep/0916_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_161567969-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_edsep/0916_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.25-solver_euler/0916_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.25-solver_euler/0916_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.1-solver_euler/0916_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.1-solver_euler/0916_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.custom.5-solver_euler/0916_estimates_0.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.custom.5-solver_euler/0916_estimates_0.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+</tr>
+<tr>
+<td>
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0916_targets_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0916_targets_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_160914850-101.step_100000-seed_984104/0916_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_160914850-101.step_100000-seed_984104/0916_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_161938646-101.step_100000-seed_984104/0916_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_161938646-101.step_100000-seed_984104/0916_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_158819540-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_euler/0916_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_158819540-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_euler/0916_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_161567969-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_edsep/0916_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_161567969-251.step_250000-seed_984104-discretization_bwd.linear.25-solver_edsep/0916_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.25-solver_euler/0916_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.25-solver_euler/0916_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.1-solver_euler/0916_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.linear.1-solver_euler/0916_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+<td>
+
+<img src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.custom.5-solver_euler/0916_estimates_1.png" alt="An audio spectrogram." width="150">
+<audio id="audioPlayer" controls>
+  <source src="./samples/xid_162822692-saved_203_202000-seed_984104-discretization_fwd.custom.5-solver_euler/0916_estimates_1.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+</td>
+</tr>
+</table>
+        </div>
+
+    </div>
+
+</body>
+</html>

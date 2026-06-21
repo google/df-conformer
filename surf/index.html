@@ -109,6 +109,65 @@
             border-radius: 8px; /* Rounded corners for the abstract box */
             margin-bottom: 30px;
         }
+        .links-box {
+            text-align: center;
+            margin-top: 15px;
+            margin-bottom: 30px;
+        }
+        .btn-link {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 24px;
+            margin: 0 8px;
+            background-color: #1f2937;
+            color: #ffffff !important;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.2s ease;
+        }
+        .btn-link:hover {
+            background-color: #374151;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            text-decoration: none;
+        }
+        .btn-link:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .figure-box {
+            background-color: #ffffff;
+            border: 1px solid #e2e7f0;
+            padding: 24px;
+            border-radius: 8px;
+            margin-bottom: 35px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        .figure-box img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+        }
+        .figure-caption {
+            margin-top: 15px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: #4b5563;
+            text-align: justify;
+            max-width: 1100px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .section-desc {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: #4b5563;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
@@ -126,23 +185,44 @@
           <span><sup>*</sup>Equal contribution</span> &nbsp;&nbsp;&nbsp;&nbsp; <span><sup>†</sup>Equal senior contribution</span> &nbsp;&nbsp;&nbsp;&nbsp; <span><sup>✏️</sup>Work partly done as an intern at Google DeepMind</span>
         </div>
 
+        <div class="links-box">
+          <a class="btn-link" href="https://arxiv.org/abs/2606.04921" target="_blank">Paper (arXiv)</a>
+          <a class="btn-link" href="https://openreview.net/forum?id=Fy2HkFMYH6&referrer=%5BAuthor%20Console%5D(%2Fgroup%3Fid%3DICML.cc%2F2026%2FConference%2FAuthors%23your-submissions)" target="_blank">OpenReview</a>
+        </div>
+
         <div class="abstract-box">
             <h2>Abstract</h2>
             <p>
-            
-The goal of single-channel source separation is to reconstruct K sources given their mixture.
-In supervised settings where vast amounts of clean source data are available, this challenging, illposed problem has been addressed successfully by generative diffusion and flow-based prior models.
-However, access to such clean source samples is often limited.
-To bridge this gap, we present Separation via Unsupervised Remixing Flow (<b>SURF</b>), an unsupervised flow matching approach for source separation that learns directly from observed mixtures.
-This method relies on a novel combination of state-of-the-art supervised flow matching and regression-based selfsupervised techniques.
-At a high level, starting from a teacher model, we utilize a “remixing” step to bootstrap the learning of a student flow model from the teacher’s estimates.
-We provide insights into the objectives optimized by this approach and draw a novel connection to the Wake-Sleep algorithm.
-Empirical evaluations on image and audio benchmarks demonstrate that <b>SURF</b> establishes a new state-of-the-art, significantly outperforming existing unsupervised methods.
-
+            The goal of single-channel source separation is to reconstruct <i>K</i> sources given their mixture.
+            In supervised settings where vast amounts of clean source data are available, this challenging, ill-posed problem has been addressed successfully by generative diffusion and flow-based prior models.
+            However, access to such clean source samples is often limited, and even when available, supervised models are vulnerable to domain shifts.
+            To bridge this gap, we present Separation via Unsupervised Remixing Flow (<b>SURF</b>), an unsupervised flow matching approach for source separation that learns directly from observed mixtures.
+            This method relies on a novel combination of state-of-the-art supervised flow matching and regression-based self-supervised techniques.
+            At a high level, starting from a teacher model, we utilize a “remixing” step to bootstrap the learning of a student flow model from the teacher’s estimates.
+            We provide insights into the objectives optimized by this approach and draw a novel connection to the Wake-Sleep algorithm.
+            Empirical evaluations on image and audio benchmarks demonstrate that <b>SURF</b> establishes a new state-of-the-art, significantly outperforming existing unsupervised methods.
             </p>
         </div>
 
-        
+        <h2>Method Overview</h2>
+        <div class="figure-box">
+            <img src="./figures/surf_diagram.png" alt="Illustration of SURF method" style="max-width: 700px;">
+            <div class="figure-caption">
+                <b>Figure 1: Illustration of SURF.</b> Given initial mixtures, a teacher model first produces source estimates. These are shuffled, then used as self-supervised examples to a student flow matching model. The student is trained to predict the estimated sources (ReMixIT) or original mixtures (Self-Remixing).
+            </div>
+        </div>
+
+        <h2>Unsupervised Image Separation</h2>
+        <p class="section-desc">
+            We evaluate image separation performance using the MNIST and CIFAR-10 datasets. Training and evaluation mixtures are constructed by averaging pairs of randomly selected images. Below we compare the qualitative separation results against various baselines.
+        </p>
+        <div class="figure-box">
+            <img src="./figures/qualitative_results.png" alt="Qualitative image separation results on MNIST and CIFAR-10">
+            <div class="figure-caption">
+                <b>Figure 2: Qualitative examples for image separation on the MNIST (above) and CIFAR-10 (below) datasets.</b> We compare Supervised Regression, Supervised Flow, BASIS, MixIT, and SURF algorithms. SURF delivers high-quality source separation and perceptually realistic reconstructions.
+            </div>
+        </div>
+
         <h2>Libri2Mix: Speech Source Separation</h2>
         <p>
             Separation of mixtures of clean speech sources. The model is trained on the Libri2Mix train-360-clean mixtures only.
